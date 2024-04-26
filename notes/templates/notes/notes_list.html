@@ -1,0 +1,15 @@
+{% load static %}
+<html>
+<head>
+    <title>Notes</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/notes.css' %}">
+</head>
+<body>
+    <h1 class='notes-h1'>Notes</h1>
+    <ul>
+        {% for note in notes %}
+            <li class='note-li'>{{ note.title }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

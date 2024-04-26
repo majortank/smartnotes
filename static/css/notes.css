@@ -1,0 +1,12 @@
+.note-li {
+    list-style-type: none;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #fdba74;
+    border-radius: 5px;
+    background-color: #ffedd5;
+}
+
+.notes-h1 {
+    color: #f59e0b;
+}
