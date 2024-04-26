@@ -1,9 +1,9 @@
-<html>
-<head>
-    <title>{{ note.title }}</title>
-</head>
-<body>
-    <h1>{{ note.title }}</h1>
-    <p>{{ note.text }}</p>
-</body>
-</html>
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class='notes-card'>
+        <h1 class='notes-card-title'>{{ note.title }}</h1>
+        <p class='notes-card-content'>{{ note.text }}</p>
+    </div>
+{% endblock %}
