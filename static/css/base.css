@@ -3,3 +3,7 @@
     color: #ea580c;
     font-size: 2.5em;
 }
+
+ul.errorlist {
+    display: none !important;
+}
