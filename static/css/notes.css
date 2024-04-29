@@ -1,47 +1,5 @@
-.note-li {
-    list-style-type: none;
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #fdba74;
-    border-radius: 5px;
-    background-color: #ffedd5;
-}
-
-.note-li-title {
-    color: #3f3f46;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-.note-li:hover {
-    background-color: #ffddaa;
-}
-
-.notes-card {
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #fdba74;
-    border-radius: 5px;
-    background-color: #ffedd5;
-}
-
-.notes-card-title {
-    color: #27272a;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-.notes-card-content {
-    color: #3f3f46;
-    font-size: 1.2em;
-}
-
-.notes-card:hover {
-    background-color: #ffddaa;
-}
 
 
-
-.notes-h2 {
-    color: #f97316;
+ul.errorlist {
+    display: none !important;
 }
