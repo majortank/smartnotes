@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class='form-h2'>Register</h2>
+<form method="post" style='text-align: left; margin:0 auto; width:600;'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class='btn btn-primary my-5'>Register</button>
+    
+</form>
+{% if form.errors %}
+    <div class='alert alert-danger'>
+        {{ form.errors.username.as_text}}
+        {{ form.errors.password1.as_text}}
+        {{ form.errors.password2.as_text}}
+    </div>
+{% endif %}
+{% endblock %}

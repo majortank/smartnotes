@@ -9,7 +9,24 @@
 </head>
 <body>
     <header>
-        <h1 class='base-h1 m-2'>SmartNotes</h1>
+        <nav class='navbar navbar-dark bg-dark'>
+            <a class='navbar-brand mx-2' href="{% url 'home' %}">SmartNotes</a>
+            <ul class='navbar-nav mx-2'>
+                {% if user.is_authenticated %}
+                    <li class='nav-item'>
+                        <a class='btn btn-outline-light me-1' href="{% url 'notes.list' %}">Home</a>
+                        <a class='btn btn-outline-light me-1' href="{% url 'logout' %}">Logout</a>
+                        <a class='btn btn-outline-light me-1' href="{% url 'notes.new' %}">Create Note</a>
+                    </li>
+                {% else %}
+                    <li class='nav-item'>
+                        <a class='btn btn-outline-light me-1' href="{% url 'login' %}">Login</a>
+                        <a class='btn btn-outline-light me-1' href="{% url 'register' %}">Register</a>
+                    </li>
+                    
+                {% endif %}
+            </ul>
+        </nav>
     </header>
     <main class='my-5 text-center container'>
         {% block content %}
