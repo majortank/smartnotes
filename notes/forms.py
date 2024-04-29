@@ -16,6 +16,6 @@ class NotesForm(forms.ModelForm):
 
     def clean_title(self):
         title = self.cleaned_data['title']
-        if 'Django' not in title:
-            raise forms.ValidationError('Title must contain Django')
-        return title
+        # if 'Django' not in title:
+        #     raise forms.ValidationError('Title must contain Django')
+        # return title
