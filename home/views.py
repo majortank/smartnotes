@@ -30,6 +30,9 @@ class LoginInterfaceView(LoginView):
         if self.request.user.is_authenticated:
             return redirect('/smart/notes')
         return super().get(request, *args, **kwargs)
+    def form_invalid(self, form):
+        # Customize how errors are handled here
+        return self.render_to_response(self.get_context_data(form=form, errors=form.errors))
 
 def logout_view(request):
     logout(request)

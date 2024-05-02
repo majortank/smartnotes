@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ck)+_xhais35nkl&s98m95g-=wgd4pn2*f0ngdp=sr+8%ec79t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.10.15.1','localhost']
+ALLOWED_HOSTS = ['10.10.15.1','localhost', 'smartnotes.local']
 
 
 # Application definition

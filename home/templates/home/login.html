@@ -10,8 +10,11 @@
 
 {% if form.errors %}
     <div class='alert alert-danger'>
-        {{ form.errors.username.as_text}}
-        {{ form.errors.password.as_text}}
+        {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
     </div>
 {% endif %}
 {% endblock %}
