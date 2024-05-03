@@ -5,6 +5,9 @@
     <div class='border rounded'>
         <h1 class='my-5'>{{ note.title }}</h1>
         <p class=''>{{ note.text }}</p>
+        <p class=''>Created: {{ note.created_at }}</p>
+        <p class=''>Last Updated: {{ note.updated_at }}</p>
+        <p class=''>category: {{ note.category }}</p>
     </div>
     <a href="{% url 'notes.list' %}" class='btn btn-secondary my-5'>Back</a>
     <a href="{% url 'notes.update' pk=note.id %}" class='btn btn-secondary my-5'>Edit</a>
