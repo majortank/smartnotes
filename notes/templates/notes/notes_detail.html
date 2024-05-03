@@ -2,14 +2,18 @@
 
 
 {% block content %}
-    <div class='border rounded'>
-        <h1 class='my-5'>{{ note.title }}</h1>
-        <p class=''>{{ note.text }}</p>
-        <p class=''>Created: {{ note.created_at }}</p>
-        <p class=''>Last Updated: {{ note.updated_at }}</p>
-        <p class=''>category: {{ note.category }}</p>
-    </div>
-    <a href="{% url 'notes.list' %}" class='btn btn-secondary my-5'>Back</a>
+<div class="card text-center">
+    <div class="card-body">
+      <h5 class="card-title">{{ note.title }}</h5>
+      <p class="card-text">{{ note.text }}</p>
+      <a href="{% url 'notes.list' %}" class='btn btn-secondary my-5'>Back</a>
     <a href="{% url 'notes.update' pk=note.id %}" class='btn btn-secondary my-5'>Edit</a>
     <a href="{% url 'notes.delete' pk=note.id %}" class='btn btn-danger my-5'>Delete</a>
+    </div>
+    <div class="card-footer text-body-secondary">
+        {{ note.created_at }}
+    </div>
+  </div>
 {% endblock %}
+
+

@@ -7,6 +7,8 @@ from .models import Notes
 
 from .forms import NotesForm
 
+from django.db.models import Q
+
 
 
 class NotesListView(LoginRequiredMixin, ListView):
@@ -16,7 +18,7 @@ class NotesListView(LoginRequiredMixin, ListView):
     login_url = '/login'
 
     def get_queryset(self):
-        return self.request.user.notes.all()
+        return Notes.objects.filter(Q(user=self.request.user) | Q(shared_with=self.request.user))
 
 class NotesDetailView(DetailView):
     model = Notes
