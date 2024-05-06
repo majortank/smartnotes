@@ -3,6 +3,11 @@
 
 {% block content %}
 <div class="card text-center">
+    <div class="card-header">
+        <span class="badge text-bg-success">
+            Created by : {{ note.user }}
+        </span>
+      </div>
     <div class="card-body">
       <h5 class="card-title">{{ note.title }}</h5>
       <p class="card-text">{{ note.text }}</p>
@@ -11,7 +16,7 @@
     <a href="{% url 'notes.delete' pk=note.id %}" class='btn btn-danger my-5'>Delete</a>
     </div>
     <div class="card-footer text-body-secondary">
-        {{ note.created_at }}
+        On {{ note.created_at }}
     </div>
   </div>
 {% endblock %}

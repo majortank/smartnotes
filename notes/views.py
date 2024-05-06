@@ -25,6 +25,7 @@ class NotesListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['shared_notes'] = Notes.objects.filter(shared_with=self.request.user)
+        context['shared_by'] = Notes.objects.filter(user=self.request.user)
         return context
     
 

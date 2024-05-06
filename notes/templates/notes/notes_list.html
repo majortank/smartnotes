@@ -4,24 +4,25 @@
     <h1 class='my-5'>Notes</h1>
     <div class='row row-cols3 g-2'>
         {% for note in notes %}
-        <div class='col'>
+        <div class='col col-md-auto'>
             <div class='p-3 border rounded-pill'>
                 <a href="{% url 'notes.detail' pk=note.id %}" class='text-dark text-decoration-none'><h3>{{note.title}}</h3></a>
                 {{ note.text|truncatechars:10}}
-                {{ note.shared_with }}
+                
             </div>
+            <span class="badge text-bg-secondary">shared with:</span> {{ note.shared_with.all|join:"," }}
         </div>
         {% endfor %}
     </div>
     <h2 class='my-5'>Shared Notes</h2>
     <div class='row row-cols3 g-2'>
         {% for note in shared_notes %}
-        <div class='col'>
+        <div class='col col-md-auto'>
             <div class='p-3 border rounded-pill'>
                 <a href="{% url 'notes.detail' pk=note.id %}" class='text-dark text-decoration-none'><h3>{{note.title}}</h3></a>
                 {{ note.text|truncatechars:10}}
-                {{ note.shared_with }}
             </div>
+            <span class="badge text-bg-secondary">shared by:</span>{{note.user}}
         </div>
         {% endfor %}
     </div>
