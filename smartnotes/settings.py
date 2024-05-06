@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'smartnotes.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-[label django_app/settings.py]
+
 if DEVELOPMENT_MODE is True:
     DATABASES = {
         "default": {
