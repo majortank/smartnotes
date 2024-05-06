@@ -38,6 +38,9 @@ def logout_view(request):
     logout(request)
     return redirect('/login')
 
+# class LogoutInterfaceView(LogoutView):
+#     next_page = '/login'
+
 
 class RegisterInterfaceView(CreateView):
     template_name = 'home/register.html'
