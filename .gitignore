@@ -284,4 +284,9 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode
 
+<<<<<<< HEAD
 node_modules/
+=======
+db.sqlite3
+*.pyc
+>>>>>>> 0964ff8ac0afd2f6f5f643b1d9fd9a1b37391b4a
