@@ -1,17 +1,43 @@
-{% extends 'base.html' %}
+{% extends '_base.html' %}
+
 {% block content %}
-<h2 class='form-h2'>Register</h2>
-<form method="post" style='text-align: left; margin:0 auto; width:600;'>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class='btn btn-primary my-5'>Register</button>
-    
-</form>
-{% if form.errors %}
-    <div class='alert alert-danger'>
-        {{ form.errors.username.as_text}}
-        {{ form.errors.password1.as_text}}
-        {{ form.errors.password2.as_text}}
+<section class="text-gray-600 body-font">
+    <div class="container px-5 py-24 mx-auto flex flex-wrap items-center">
+        <div class="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col md:m-auto w-full mt-10 md:mt-0">
+            <h2 class="text-gray-900 text-lg font-medium title-font mb-5">Register</h2>
+            <form class='mb-4' method="post">
+                {% csrf_token %}
+                <div class="relative mb-4">
+                    <label for="{{ form.username.id_for_label }}" class="leading-7 text-sm text-gray-600">{{ form.username.label }}</label>
+                    {{ form.username }}
+                </div>
+                <div class="relative mb-4">
+                    <label for="{{ form.password1.id_for_label }}" class="leading-7 text-sm text-gray-600">{{ form.password1.label }}</label>
+                    {{ form.password1 }}
+                </div>
+                <div class="relative mb-4">
+                    <label for="{{ form.password2.id_for_label }}" class="leading-7 text-sm text-gray-600">{{ form.password2.label }}</label>
+                    {{ form.password2 }}
+                </div>
+                <button type="submit" class='text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg'>Register</button>
+            </form>
+            {% if form.errors %}
+            <div role="alert" class="rounded border-s-4 border-red-500 bg-red-50 p-4">
+                <strong class="block font-medium text-red-800"> Something went wrong </strong>
+              
+                <p class="mt-2 text-sm text-red-700">
+                  <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </p>
+              </div>
+            {% endif %}
+            <p class="mt-4 text-sm text-gray-600">Already have an account? <a href="/login" class="text-indigo-500">Login</a></p>
+        </div>
     </div>
-{% endif %}
+</section>
 {% endblock %}

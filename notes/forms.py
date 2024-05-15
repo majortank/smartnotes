@@ -15,8 +15,13 @@ class NotesForm(forms.ModelForm):
             'text' : 'Write your thoughts here:',
         }
 
+    
+
     # def clean_title(self):
     #     title = self.cleaned_data['title']
     #     if 'Perfect' not in title:
     #         raise forms.ValidationError('Title must contain Perfect')
     #     return title
+
+
+    
