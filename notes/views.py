@@ -11,6 +11,7 @@ from django.db.models import Q
 
 
 
+
 class NotesListView(LoginRequiredMixin, ListView):
     model = Notes
     context_object_name = 'notes'
@@ -25,7 +26,7 @@ class NotesListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['shared_notes'] = Notes.objects.filter(shared_with=self.request.user)
-        context['shared_by'] = Notes.objects.filter(user=self.request.user)
+        context['shared_by'] = Notes.objects.filter(shared_with=self.request.user).exclude(user=self.request.user)
         return context
     
 
@@ -40,6 +41,11 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
     form_class = NotesForm
     success_url = '/smart/notes'
     login_url = '/admin'
+
+    def get_form_kwargs(self):
+        kwargs = super(NotesCreateView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -56,3 +62,8 @@ class NotesDeleteView(DeleteView):
     model = Notes
     success_url = '/smart/notes'
     template_name = 'notes/notes_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['note'] = self.get_object()
+        return context

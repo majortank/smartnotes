@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import sys
-import dj_database_url
+
 from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-ck)+_xhais35nkl&s98m95g-=wgd4pn2*f0ngdp=sr+8%ec79t
 DEBUG = True
 
 ALLOWED_HOSTS = ['10.10.15.1','localhost', 'smartnotes.local']
-CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
+CSRF_TRUSTED_ORIGINS = ['https://localhost:8000','https://legendary-space-guacamole-q9r55wr954wcxr9j-8000.app.github.dev']
 
 # Application definition
 
@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     # Add notes app to the list of installed apps
     'notes',
     'compressor', # Add compressor to the list of installed apps
-    'tinymce', # Add tinymce to the list of installed apps
 ]
 
 
@@ -147,6 +146,3 @@ COMPRESS_ROOT = BASE_DIR / 'static'
 COMPRESS_ENABLED = True
 
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
-
-TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js'
-TINYMCE_COMPRESSOR = False
