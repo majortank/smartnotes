@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # Add notes app to the list of installed apps
     'notes',
     'compressor', # Add compressor to the list of installed apps
+    'tinymce', # Add tinymce to the list of installed apps
 ]
 
 
@@ -146,3 +147,6 @@ COMPRESS_ROOT = BASE_DIR / 'static'
 COMPRESS_ENABLED = True
 
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
+
+TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js'
+TINYMCE_COMPRESSOR = False
