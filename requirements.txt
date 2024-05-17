@@ -1,6 +1,8 @@
 django
 ipython
+<<<<<<< HEAD
+django-tinymce
+=======
 django 
-gunicorn 
-psycopg2-binary 
-dj-database-url
+django-compressor
+>>>>>>> bcb56f9e507ea4c1f7842d01185123459d8f1c47

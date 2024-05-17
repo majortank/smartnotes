@@ -6,11 +6,13 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.forms import UserCreationForm
+
 
 from django.shortcuts import redirect
 
 from django.contrib.auth import logout
+
+from .forms import LoginForm, RegisterForm
 
 
 class HomeView(TemplateView):
@@ -25,6 +27,8 @@ class AuthorizedView(LoginRequiredMixin,TemplateView):
 
 class LoginInterfaceView(LoginView):
     template_name = 'home/login.html'
+
+    form_class = LoginForm
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated:
@@ -44,7 +48,7 @@ def logout_view(request):
 
 class RegisterInterfaceView(CreateView):
     template_name = 'home/register.html'
-    form_class = UserCreationForm
+    form_class = RegisterForm
     success_url = '/smart/notes'
 
     def get(self, request, *args, **kwargs):
