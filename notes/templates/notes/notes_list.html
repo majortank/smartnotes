@@ -10,7 +10,7 @@
                     <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl text-indigo-900 text-decoration-none'><ion-icon name="eye"></ion-icon></a>
                 </div> {% endcomment %}
                 <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl font-medium text-gray-600 text-decoration-none mt-0'><h3>{{note.title}}</h3></a>
-                {{ note.text|truncatechars:20}}
+                {{ note.text.html|truncatechars:10|safe}}
                 <!-- -->
                 
                 <!---->
@@ -28,7 +28,7 @@
                     <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl text-indigo-900 text-decoration-none'><ion-icon title='Read more...' name="eye"></ion-icon></a>
                 </div> {% endcomment %}
                 <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl font-medium text-gray-600 text-decoration-none'><h3>{{note.title}}</h3></a>
-                {{ note.text|truncatechars:20}}
+                {{ note.text.html|truncatechars:20|safe}}
             </div>
         </div>
         {% endfor %}
