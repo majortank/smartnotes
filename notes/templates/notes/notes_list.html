@@ -10,7 +10,7 @@
                     <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl text-indigo-900 text-decoration-none'><ion-icon name="eye"></ion-icon></a>
                 </div> {% endcomment %}
                 <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl font-medium text-gray-600 text-decoration-none mt-0'><h3>{{note.title}}</h3></a>
-                {{ note.text|truncatechars:20}}
+                {{ note.text.html|truncatechars:10|safe}}
                 <!-- -->
                 
                 <!---->
@@ -28,37 +28,9 @@
                     <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl text-indigo-900 text-decoration-none'><ion-icon title='Read more...' name="eye"></ion-icon></a>
                 </div> {% endcomment %}
                 <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl font-medium text-gray-600 text-decoration-none'><h3>{{note.title}}</h3></a>
-                {{ note.text|truncatechars:20}}
+                {{ note.text.html|truncatechars:20|safe}}
             </div>
         </div>
         {% endfor %}
     </div>
-
-    {% if messages %}
-    {% for message in messages %}
-    <div id="dismiss-alert" class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 bg-teal-50 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500" role="alert">
-        <div class="flex">
-            <div class="flex-shrink-0">
-                <svg class="flex-shrink-0 size-4 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                    <path d="m9 12 2 2 4-4"></path>
-                  </svg>
-            </div>
-            <div class="ms-2">
-                <div class="text-sm font-medium">
-                    {{ message }}
-                </div>
-            </div>
-            <div class="ps-3 ms-auto">
-                <div class="-mx-1.5 -my-1.5">
-                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 6 6 18"></path>
-                        <path d="m6 6 12 12"></path>
-                      </svg>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-    {% endif %}
 {% endblock %}

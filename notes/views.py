@@ -26,7 +26,7 @@ class NotesListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['shared_notes'] = Notes.objects.filter(shared_with=self.request.user)
-        context['shared_by'] = Notes.objects.filter(shared_with=self.request.user).exclude(user=self.request.user)
+        context['shared_by'] = Notes.objects.filter(user=self.request.user)
         return context
     
 
@@ -42,15 +42,14 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
     success_url = '/smart/notes'
     login_url = '/admin'
 
-    def get_form_kwargs(self):
-        kwargs = super(NotesCreateView, self).get_form_kwargs()
-        kwargs.update({'user': self.request.user})
-        return kwargs
-
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
+        # Assuming `shared_with` is a field in your form
+        shared_with_users = form.cleaned_data.get('shared_with')
+        if shared_with_users is not None:
+            self.object.shared_with.set(shared_with_users)
         return HttpResponseRedirect(self.get_success_url())
 
 class NotesUpdateView(UpdateView):

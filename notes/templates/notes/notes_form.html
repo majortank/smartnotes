@@ -1,7 +1,8 @@
 {% extends "_base.html" %}
 
 {% block content %}
-  <h2 class='form-h2'>New Note</h2>
+  <div class="mx-auto max-w-xl">
+    <h2 class='form-h2'>New Note</h2>
   <form method="post">
     {% csrf_token %}
     <label
@@ -48,6 +49,7 @@
     <label for="shared_with" class="block text-sm font-medium text-gray-700"> {{ form.shared_with.label }} </label>
       {{ form.shared_with }}
   </form>
+  </div>
 
   {% if form.errors %}
             <div role="alert" class="rounded border-s-4 border-red-500 bg-red-50 p-4">
