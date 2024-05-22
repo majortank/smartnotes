@@ -1,5 +1,5 @@
 django
 ipython
-django-tinymce
 django 
 django-compressor
+django-quill-editor
