@@ -1,5 +1,6 @@
 # SmartNotes
 ![SmartNotes](Picture10.png)
+
 Creation and management of simple notes by Thabo Tankiso Thebe.
 
 [Access SmartNotes here](https://legendary-space-guacamole-q9r55wr954wcxr9j-8000.app.github.dev)
@@ -79,24 +80,31 @@ B --> F[Delete a Note]
 #### 1. User logs into the application
 
 - The URL used by the user is: `http://smartnotes.local:8000/`
-![Landing Page]("Picture1.png")
+
+![Landing Page](Picture1.png)
 
 #### 2. User register for SmartNotes account
 
 - The URL used by the user is: `http://smartnotes.local:8000/register`
-![Register for SmartNotes]("Picture2.png")
+
+![Register for SmartNotes](Picture2.png)
+
 - User can create personal credentials (a username and a password).
 
 #### 3. Login into SmartNotes
 
 - The URL used by the user is: `http://smartnotes.local:8000/login`
-![Login into SmartNotes]("Picture3.png")
+
+![Login into SmartNotes](Picture3.png)
+
 - User enters their personal credentials (a username and a password).
 
 #### 4. Create a note
 
 - After logging into the site, the user inserts a title, content and category for the note.
+
 ![Create a note](Picture4.png)
+
 - A User can choose to share a note with other users of their choice or not share.
 - User saves the note.
 
@@ -104,18 +112,22 @@ B --> F[Delete a Note]
 
 - After creating or if another user shares a note, the user can see their note listed under "Notes" or "Shared Notes".
 - User can read/see their notes by clicking on the note's title.
+
 ![List Notes](Picture5.png)
+
 ![Read a note](Picture6.png)
 
 #### 6. Update a note
 
 - After creating a note, the user can edit their note and update it.
 - While editing the user can also choose to share the note with other users.
+
 ![Update a note](Picture7.png)
 
 #### 7. Delete a note
 
 - After creating a note, the user can delete it.
+
 ![Delete Note](Picture8.png)
 
 ## Possible Exceptions
@@ -129,5 +141,6 @@ Exceptions are special cases and rules that can influence and even stop the smoo
 ### System Exceptions
 
 - **Invalid Credentials**: If the user provides invalid credentials, the login is not successful, and the process stops.
+
 ![Invalid Credentials](Picture9.png)
 
