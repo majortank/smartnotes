@@ -11,7 +11,7 @@
                     <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-2xl text-indigo-900 text-decoration-none'><ion-icon name="eye"></ion-icon></a>
                 </div> {% endcomment %}
                 <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class='text-lg font-medium text-gray-800 text-decoration-none mt-0'><h3>{{note.title}}</h3></a>
-                {{ note.text.html|truncatechars:10|safe}}
+                {{ note.text.html|safe}}
                 <!-- -->
                 
                 <!---->
@@ -26,7 +26,7 @@
         <div class='flex flex-col gap-2 rounded-lg border border-indigo-700 bg-indigo-50 p-1 items-start'>
             <div class='block text-sm font-medium text-gray-900'>
                 <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class=' text-lg font-medium text-gray-800 text-decoration-none'><h3>{{note.title}}</h3></a>
-                {{ note.text.html|truncatechars:10|safe}}
+                {{ note.text.html|safe}}
             </div>
         </div>
         {% endfor %}
