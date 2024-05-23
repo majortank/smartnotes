@@ -41,8 +41,8 @@ Name | Function | Responsibility
 
 | Name          | Function          | Responsibility       |
 | ------------- | ----------------- | --------------------- |
-| Tankiso Thebe | Software Developer | SmartNotes Application |
-| Lebohang Thokoane | Quality Assurance | Access to the app |
+| Tankiso Thebe | Software Developer | Develop |
+| Lebohang Thokoane | Quality Assurance | Test the app |
 
 ## Current Features Analysis
 
@@ -64,6 +64,7 @@ The application allows different users to create, read, and manage notes. Admin 
 | ------------ | ---------------------------------- | ---------------- |
 | Django Admin | Manage the SmartNotes application users and notes | Admin access     |
 | Notes        | Displaying and managing notes for logged-in users | User account (username and password) |
+| Home      | Main or landing page for the app | Any |
 
 ### Process Flow
 
