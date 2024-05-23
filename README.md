@@ -1,5 +1,5 @@
 # SmartNotes
-![SmartNotes]("Picture10.png")
+![SmartNotes](Picture10.png)
 Creation and management of simple notes by Thabo Tankiso Thebe.
 
 [Access SmartNotes here](https://legendary-space-guacamole-q9r55wr954wcxr9j-8000.app.github.dev)
