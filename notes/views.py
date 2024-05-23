@@ -11,6 +11,7 @@ from django.db.models import Q
 
 
 
+
 class NotesListView(LoginRequiredMixin, ListView):
     model = Notes
     context_object_name = 'notes'
@@ -45,6 +46,10 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
+        # Assuming `shared_with` is a field in your form
+        shared_with_users = form.cleaned_data.get('shared_with')
+        if shared_with_users is not None:
+            self.object.shared_with.set(shared_with_users)
         return HttpResponseRedirect(self.get_success_url())
 
 class NotesUpdateView(UpdateView):
@@ -56,3 +61,8 @@ class NotesDeleteView(DeleteView):
     model = Notes
     success_url = '/smart/notes'
     template_name = 'notes/notes_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['note'] = self.get_object()
+        return context

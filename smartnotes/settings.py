@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import sys
-import dj_database_url
+import sys, os
+
 from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-ck)+_xhais35nkl&s98m95g-=wgd4pn2*f0ngdp=sr+8%ec79t
 DEBUG = True
 
 ALLOWED_HOSTS = ['10.10.15.1','localhost', 'smartnotes.local']
-CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
+CSRF_TRUSTED_ORIGINS = ['https://localhost:8000','https://localhost:8080','https://legendary-space-guacamole-q9r55wr954wcxr9j-8000.app.github.dev']
 
 # Application definition
 
@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     # Add notes app to the list of installed apps
     'notes',
     'compressor', # Add compressor to the list of installed apps
-    'tinymce', # Add tinymce to the list of installed apps
+    'django_quill', # Add django_quill to the list of installed apps
+    'widget_tweaks', # Add widget_tweaks to the list of installed apps
 ]
 
 
@@ -126,13 +127,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Adjust this path as needed
+
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, 'static'),  # Ensure any additional static directories are correctly listed
 ]
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -146,7 +146,12 @@ COMPRESS_ROOT = BASE_DIR / 'static'
 
 COMPRESS_ENABLED = True
 
-STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
+STATICFILES_FINDERS =  [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
 
-TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js'
-TINYMCE_COMPRESSOR = False
+
+# CRFS settings
+# CSRF_FAILURE_VIEW = 'home.views.csrf_failure'

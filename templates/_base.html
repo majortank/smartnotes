@@ -3,6 +3,8 @@
 {% load compress %}
 {% load static %}
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,24 +13,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartNotes</title>
-
+    {{form.media}}
     {% compress css %}
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
     {% endcompress %}
 
 </head>
 
-<body class="bg-slate-50">
+<body class="bg-slate-50 flex flex-col min-h-screen">
 
-    <!-- Add this -->
+    <div class='flex-grow'>
+        <!-- Add this -->
     <header>
         {% if user.is_authenticated %}
             <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
                 <div class="sm:flex sm:items-center sm:justify-between">
                 <div class="text-center sm:text-left">
-                    
                 <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Welcome Back, {{ user.username }}!</h1>
-            
                     <p class="mt-1.5 text-sm text-gray-500">Let's write a new note! 🎉</p>
                 </div>
             
@@ -59,7 +60,6 @@
             
                     <p class="mt-1.5 text-sm text-gray-500">Got notes? login to write 🎉</p>
                 </div>
-            
                 <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
                     {% if not request.resolver_match.url_name == 'login' %}
                         <a href="{% url 'login' %}"
@@ -69,7 +69,6 @@
                         <span class="text-sm font-medium"> Login </span>
                         </a>
                     {% endif %}
-
                     {% if not request.resolver_match.url_name == 'register' %}
                     <a href="{% url 'register' %}"
                     class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-5 py-3 text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring"
@@ -78,12 +77,10 @@
                     <span class="text-sm font-medium"> Register </span>
                 </a>
                     {% endif %}
-                
                 </div>
                 </div>
             </div>
         {% endif %}
-        
       </header>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://use.fontawesome.com/03f8a0ebd4.js"></script>
@@ -95,24 +92,55 @@
         {% block content %}
         {% endblock content %}
     </div>
+    <!-- -->
+    {% if messages %}
+    {% for message in messages %}
+    <div id="dismiss-alert" class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 bg-red-50 border border-red-200 text-sm text-red-800 rounded-lg p-4 dark:bg-red-800/10 dark:border-red-900 dark:text-red-500" role="alert">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="flex-shrink-0 size-4 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+            </div>
+            <div class="ms-2">
+                <div class="text-sm font-medium">
+                    {{ message }}
+                </div>
+            </div>
+            <div class="ps-3 ms-auto">
+                <div class="-mx-1.5 -my-1.5">
+                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                      </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    </div>
+    <!-- Footer -->
+    <footer class="bg-gray-50">
+        <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
+            <div class="sm:flex sm:items-center sm:justify-between">
+            <div class="flex justify-center items-center sm:justify-start">
+                <ion-icon name="document-text-outline" class="text-5xl text-indigo-700 hover:text-indigo-200">
+                </ion-icon>
+                <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+                    <a href="{% url 'home' %}" class="text-indigo-600 hover:text-indigo-200">SmartNotes</a>
+            </div>
+            <p class="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-right">
+                Copyright &copy; SmartNotes 2024. All rights reserved.
+            </p>
+            </div>
+        </div>
+        </footer>
+    <!-- -->
 </body>
 
-<footer class="bg-gray-50">
-    <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
-      <div class="sm:flex sm:items-center sm:justify-between">
-        <div class="flex justify-center items-center sm:justify-start">
-            <ion-icon name="document-text-outline" class="text-5xl text-indigo-700 hover:text-indigo-200">
-            </ion-icon>
-            <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
-                <a href="{% url 'home' %}" class="text-indigo-600 hover:text-indigo-200">SmartNotes</a>
-        </div>
-  
-        <p class="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-right">
-          Copyright &copy; SmartNotes 2024. All rights reserved.
-        </p>
-      </div>
-    </div>
-  </footer>
+
   
 
 </html>

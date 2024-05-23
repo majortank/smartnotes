@@ -1,18 +1,65 @@
 {% extends "_base.html" %}
-
+{% load widget_tweaks %}
 {% block content %}
-  <h2 class='form-h2'>New Note</h2>
+  <div class="mx-auto max-w-xl">
+    <h2 class='text-lg text-indigo-500 mb-4'>New Note</h2>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class='btn btn-primary my-5'>Save</button>
+    <label
+        for="NoteTitle"
+        class="block overflow-hidden rounded-md border border-indigo-200 px-3 py-2 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600"
+      >
+        <span class="text-xs font-medium text-gray-700"> {{ form.title.label}} </span>
+        {{ form.title }}
+      </label>
+
+      <div class='my-4'>
+        <label for="OrderNotes" class="text-xs font-medium text-gray-700">{{ form.text.label }}</label>
+        <div
+          class="overflow-y rounded-lg border border-gray-200 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600">
+          {{ form.text|add_class:" h-80 w-full p-3" }}
+        </div>
+        <div class="flex items-center justify-end gap-2 bg-white p-3">
+          <!-- -->
+          <div class=" flex flex-row justify-end items-center bg-slate-50">
+            <!-- <label for="HeadlineAct" class="text-sm font-medium text-gray-900"> {{ form.category.label }} </label> -->
+          
+            {{ form.category }}
+          </div>
+          <!-- -->
+          <a
+          href="{% url 'notes.list' %}"
+            class="rounded bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-600"
+          >
+            Cancel
+        </a>
+    
+          <button
+            type="submit"
+            class="rounded bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    <label for="shared_with" class="block text-sm font-medium text-gray-700"> {{ form.shared_with.label }} </label>
+      {{ form.shared_with }}
   </form>
+  </div>
 
   {% if form.errors %}
-    <div class='alert alert-danger'>
-        {{ form.errors.title.as_text}}
-    </div>
-  {% endif %}
-
-  <a href="{% url 'notes.list' %}" class='btn btn-secondary'>Cancel</a>
+            <div role="alert" class="rounded border-s-4 border-red-500 bg-red-50 p-4">
+                <strong class="block font-medium text-red-800"> Something went wrong </strong>
+              
+                <p class="mt-2 text-sm text-red-700">
+                  <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </p>
+              </div>
+            {% endif %}
 {% endblock %}
