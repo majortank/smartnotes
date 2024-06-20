@@ -145,3 +145,4 @@ Exceptions are special cases and rules that can influence and even stop the smoo
 
 ![Invalid Credentials](Picture9.png)
 
+This is a django project
