@@ -28,8 +28,8 @@ SECRET_KEY = 'django-insecure-ck)+_xhais35nkl&s98m95g-=wgd4pn2*f0ngdp=sr+8%ec79t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.10.15.1','localhost', 'smartnotes.local']
-CSRF_TRUSTED_ORIGINS = ['https://localhost:8000','https://localhost:8080','https://legendary-space-guacamole-q9r55wr954wcxr9j-8000.app.github.dev']
+ALLOWED_HOSTS = ['10.10.15.1','localhost', 'smartnotes.local', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://localhost:8000','https://localhost:8080','https://127.0.0.1']
 
 # Application definition
 
