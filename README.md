@@ -22,6 +22,7 @@ Creation and management of simple notes by Thabo Tankiso Thebe.
     6. [Update a note](#6-update-a-note)
     7. [Delete a note](#7-delete-a-note)
 9. [Possible Exceptions](#possible-exceptions)
+10. [How to Run This Project](#how-to-run-this-project)
 
 ---
 
@@ -134,6 +135,13 @@ B --> F[Delete a Note]
 ## Possible Exceptions
 
 Exceptions are special cases and rules that can influence and even stop the smooth running of the SmartNotes app.
+
+## How to Run This Project
+```bash
+pip install -r requirements.txt 
+python manage.py migrate
+python manage.py runserver
+```
 
 ### Logic Exceptions
 
