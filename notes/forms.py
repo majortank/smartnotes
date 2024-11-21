@@ -1,5 +1,4 @@
 from django import forms
-
 from .models import Notes
 from django.contrib.auth.models import User
 
@@ -9,13 +8,28 @@ class NotesForm(forms.ModelForm):
         model = Notes
         fields = ['title', 'text', 'category', 'shared_with']
         widgets = {
-            'title' : forms.TextInput(attrs={'class':'mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm'}),
-            'text' : forms.Textarea(attrs={'class':'w-full h-full resize-none border-none align-top focus:ring-0 sm:text-sm'}),
-            'category' : forms.Select(attrs={'class':'mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm'}),
-            'shared_with' : forms.SelectMultiple(attrs={'class': 'mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm'}),
+            'title': forms.TextInput(attrs={
+                'class': 'w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400',
+                'placeholder': 'Enter title here...',
+            }),
+            'text': forms.Textarea(attrs={
+                'class': 'w-full rounded-lg text-sm min-h-[300px] focus:ring-0 placeholder-gray-400',
+                'placeholder': 'Write your thoughts here...',
+                'rows': '12',
+            }),
+            'category': forms.Select(attrs={
+                'class': 'rounded-lg border-gray-300 text-sm text-gray-700 focus:border-indigo-500 focus:ring-indigo-500',
+            }),
+            'shared_with': forms.SelectMultiple(attrs={
+                'class': 'rounded-lg border-gray-300 text-sm text-gray-700 focus:border-indigo-500 focus:ring-indigo-500',
+                'size': '3',
+            }),
         }
         labels = {
-            'text' : 'Write your thoughts here:',
+            'title': 'Title',
+            'text': 'Write your thoughts here:',
+            'category': 'Category',
+            'shared_with': 'Share with'
         }
 
     def __init__(self, *args, **kwargs):
@@ -23,14 +37,9 @@ class NotesForm(forms.ModelForm):
         super(NotesForm, self).__init__(*args, **kwargs)
         if user:
             self.fields['shared_with'].queryset = User.objects.exclude(pk=user.pk)
-
-    
-
-    # def clean_title(self):
-    #     title = self.cleaned_data['title']
-    #     if 'Perfect' not in title:
-    #         raise forms.ValidationError('Title must contain Perfect')
-    #     return title
-
-
-    
+            
+        # Set initial category if needed
+        self.fields['category'].initial = 'Personal'
+        
+        # Add help text for shared_with
+        self.fields['shared_with'].help_text = 'Hold Ctrl (Cmd on Mac) to select multiple users'

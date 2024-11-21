@@ -25,7 +25,7 @@ class Notes(models.Model):
 
 # Run this for Categories
 ```
-from your_app.models import Category
+from notes.models import Category
 
 CATEGORY_CHOICES = [
     ('Personal', 'Personal'),
