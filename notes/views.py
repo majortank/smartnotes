@@ -1,15 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Notes
-
-from .forms import NotesForm
-
+from .models import Notes, Comment
+from .forms import NotesForm, CommentForm
 from django.db.models import Q
-
-
+from django.core.mail import send_mail
+from django.contrib import messages
 
 
 class NotesListView(LoginRequiredMixin, ListView):
@@ -18,8 +16,6 @@ class NotesListView(LoginRequiredMixin, ListView):
     template_name = 'notes/notes_list.html'
     login_url = '/login'
 
-    # def get_queryset(self):
-    #     return Notes.objects.filter(Q(user=self.request.user) | Q(shared_with=self.request.user))
     def get_queryset(self):
         return self.request.user.notes.all()
 
@@ -35,6 +31,39 @@ class NotesDetailView(DetailView):
     context_object_name = 'note'
     template_name = 'notes/notes_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.filter(note=self.object)
+        context['comment_form'] = CommentForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.note = self.object
+            comment.user = request.user
+            comment.save()
+            self.send_comment_notification(comment)
+            messages.success(request, 'Your comment has been added.')
+            return redirect('notes.detail', pk=self.object.pk)
+        else:
+            context = self.get_context_data()
+            context['comment_form'] = form
+            return self.render_to_response(context)
+
+    def send_comment_notification(self, comment):
+        note_owner = comment.note.user
+        if note_owner.email:
+            send_mail(
+                'New Comment on Your Shared Note',
+                f'User {comment.user.username} commented on your note "{comment.note.title}".',
+                'noreply@smartnotes.com',
+                [note_owner.email],
+                fail_silently=True,
+            )
+
 
 class NotesCreateView(LoginRequiredMixin, CreateView):
     model = Notes
@@ -46,7 +75,6 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
-        # Assuming `shared_with` is a field in your form
         shared_with_users = form.cleaned_data.get('shared_with')
         if shared_with_users is not None:
             self.object.shared_with.set(shared_with_users)

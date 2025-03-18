@@ -51,8 +51,32 @@
         </p>
       </div>
     </div>
-    <!-- -->
+    <!-- Display comments -->
+    <div class="mt-6">
+      <h4 class="text-lg font-semibold text-gray-800 dark:text-white">Comments</h4>
+      <div class="space-y-4">
+        {% for comment in comments %}
+          <div class="p-4 bg-gray-100 rounded-lg dark:bg-neutral-800">
+            <p class="text-sm text-gray-600 dark:text-neutral-400">{{ comment.user.username }}:</p>
+            <p class="text-base text-gray-800 dark:text-white">{{ comment.text }}</p>
+            <p class="text-xs text-gray-500 dark:text-neutral-500">{{ comment.created_at|date:"F d, Y, H:i" }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- Comment form -->
+    <div class="mt-6">
+      <h4 class="text-lg font-semibold text-gray-800 dark:text-white">Add a Comment</h4>
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          {{ comment_form.text|add_class:"w-full rounded-lg text-sm min-h-[100px] focus:ring-0 placeholder-gray-400" }}
+        </div>
+        <button type="submit" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Submit
+        </button>
+      </form>
+    </div>
   </div>
   
 {% endblock %}
-

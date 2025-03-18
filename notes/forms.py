@@ -1,5 +1,5 @@
 from django import forms
-from .models import Notes, Tag
+from .models import Notes, Tag, Comment
 from django.contrib.auth.models import User
 
 
@@ -62,3 +62,19 @@ class NotesForm(forms.ModelForm):
         
         # Initialize access_level field
         self.fields['access_level'].initial = 'read-only'
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'w-full rounded-lg text-sm min-h-[100px] focus:ring-0 placeholder-gray-400',
+                'placeholder': 'Write your comment here...',
+                'rows': '4',
+            }),
+        }
+        labels = {
+            'text': 'Comment',
+        }
