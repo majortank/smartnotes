@@ -1,12 +1,19 @@
 from django import forms
-from .models import Notes
+from .models import Notes, Tag
 from django.contrib.auth.models import User
 
 
 class NotesForm(forms.ModelForm):
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label='Tags'
+    )
+
     class Meta:
         model = Notes
-        fields = ['title', 'text', 'category', 'shared_with']
+        fields = ['title', 'text', 'category', 'shared_with', 'tags']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400',
@@ -29,7 +36,8 @@ class NotesForm(forms.ModelForm):
             'title': 'Title',
             'text': 'Write your thoughts here:',
             'category': 'Category',
-            'shared_with': 'Share with'
+            'shared_with': 'Share with',
+            'tags': 'Tags'
         }
 
     def __init__(self, *args, **kwargs):

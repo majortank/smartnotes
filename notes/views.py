@@ -50,12 +50,27 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
         shared_with_users = form.cleaned_data.get('shared_with')
         if shared_with_users is not None:
             self.object.shared_with.set(shared_with_users)
+        tags = form.cleaned_data.get('tags')
+        if tags:
+            self.object.tags.set(tags)
         return HttpResponseRedirect(self.get_success_url())
 
 class NotesUpdateView(UpdateView):
     model = Notes
     form_class = NotesForm
     success_url = '/smart/notes'
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        shared_with_users = form.cleaned_data.get('shared_with')
+        if shared_with_users is not None:
+            self.object.shared_with.set(shared_with_users)
+        tags = form.cleaned_data.get('tags')
+        if tags:
+            self.object.tags.set(tags)
+        return HttpResponseRedirect(self.get_success_url())
 
 class NotesDeleteView(DeleteView):
     model = Notes

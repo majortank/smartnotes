@@ -90,6 +90,14 @@
             {{ form.shared_with|add_class:"w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" }}
           </div>
         </div>
+
+        <!-- Tags Input -->
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">
+            {{ form.tags.label }}
+          </label>
+          {{ form.tags|add_class:"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" }}
+        </div>
       </form>
     </div>
 
