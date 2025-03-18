@@ -55,3 +55,10 @@ class RegisterInterfaceView(CreateView):
         if self.request.user.is_authenticated:
             return redirect('/smart/notes')
         return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        email = form.cleaned_data.get('email')
+        self.object.email = email
+        self.object.save()
+        return response

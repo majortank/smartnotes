@@ -12,6 +12,10 @@
                     {{ form.username }}
                 </div>
                 <div class="relative mb-4">
+                    <label for="{{ form.email.id_for_label }}" class="leading-7 text-sm text-gray-600">{{ form.email.label }}</label>
+                    {{ form.email }}
+                </div>
+                <div class="relative mb-4">
                     <label for="{{ form.password1.id_for_label }}" class="leading-7 text-sm text-gray-600">{{ form.password1.label }}</label>
                     {{ form.password1 }}
                 </div>

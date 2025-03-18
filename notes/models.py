@@ -25,6 +25,12 @@ class Category(models.Model):
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
 class Notes(models.Model):
     title = models.CharField(max_length=255)
     text =  QuillField()
@@ -33,6 +39,7 @@ class Notes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
     shared_with = models.ManyToManyField(User, related_name='shared_notes', blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, default='Personal', related_name='notes')
+    tags = models.ManyToManyField(Tag, related_name='notes', blank=True)
 
     def __str__(self):
         return self.title
