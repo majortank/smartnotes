@@ -22,6 +22,7 @@
           {{ note.title }}
         </h3>
         <p class="card-text">{{ note.text.html | safe }}</p>
+        <p class="text-xs text-gray-500">Access Level: {{ note.access_level }}</p>
       </div>
       <div class="p-4 md:p-5">
         <a href="{% url 'notes.list' %}" class="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400" href="#">
@@ -54,5 +55,4 @@
   </div>
   
 {% endblock %}
-
 

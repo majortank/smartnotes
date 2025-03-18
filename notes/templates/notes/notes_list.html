@@ -27,6 +27,7 @@
             <div class='block text-sm font-medium text-gray-900'>
                 <a href="{% url 'notes.detail' pk=note.id %}" title='Read more...' class=' text-lg font-medium text-gray-800 text-decoration-none'><h3>{{note.title}}</h3></a>
                 {{ note.text.html|safe}}
+                <p class="text-xs text-gray-500">Access Level: {{ note.access_level }}</p>
             </div>
         </div>
         {% endfor %}

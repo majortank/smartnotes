@@ -10,10 +10,17 @@ class NotesForm(forms.ModelForm):
         required=False,
         label='Tags'
     )
+    access_level = forms.ChoiceField(
+        choices=Notes.ACCESS_LEVEL_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'rounded-lg border-gray-300 text-sm text-gray-700 focus:border-indigo-500 focus:ring-indigo-500',
+        }),
+        label='Access Level'
+    )
 
     class Meta:
         model = Notes
-        fields = ['title', 'text', 'category', 'shared_with', 'tags']
+        fields = ['title', 'text', 'category', 'shared_with', 'tags', 'access_level']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400',
@@ -37,7 +44,8 @@ class NotesForm(forms.ModelForm):
             'text': 'Write your thoughts here:',
             'category': 'Category',
             'shared_with': 'Share with',
-            'tags': 'Tags'
+            'tags': 'Tags',
+            'access_level': 'Access Level'
         }
 
     def __init__(self, *args, **kwargs):
@@ -51,3 +59,6 @@ class NotesForm(forms.ModelForm):
         
         # Add help text for shared_with
         self.fields['shared_with'].help_text = 'Hold Ctrl (Cmd on Mac) to select multiple users'
+        
+        # Initialize access_level field
+        self.fields['access_level'].initial = 'read-only'

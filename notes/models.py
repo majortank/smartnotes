@@ -32,6 +32,11 @@ class Tag(models.Model):
         return self.name
 
 class Notes(models.Model):
+    ACCESS_LEVEL_CHOICES = [
+        ('read-only', 'Read-Only'),
+        ('edit', 'Edit'),
+    ]
+
     title = models.CharField(max_length=255)
     text =  QuillField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -40,9 +45,10 @@ class Notes(models.Model):
     shared_with = models.ManyToManyField(User, related_name='shared_notes', blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, default='Personal', related_name='notes')
     tags = models.ManyToManyField(Tag, related_name='notes', blank=True)
+    access_level = models.CharField(max_length=10, choices=ACCESS_LEVEL_CHOICES, default='read-only')
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.access_level})"
 
     class Meta:
         verbose_name = 'Note'
