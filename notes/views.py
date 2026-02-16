@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog, Message
+from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog, Message, Tag
 from django.contrib.auth.models import User
 
 from .forms import NotesForm, ProfileForm
@@ -134,6 +134,11 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags_count'] = Tag.objects.count()
+        return context
+
 class NotesUpdateView(NoteOwnerMixin, UpdateView):
     model = Notes
     form_class = NotesForm
@@ -155,6 +160,11 @@ class NotesUpdateView(NoteOwnerMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags_count'] = Tag.objects.count()
+        return context
 
 class NotesDeleteView(NoteOwnerMixin, DeleteView):
     model = Notes
@@ -570,3 +580,22 @@ def send_message(request):
     )
     messages.success(request, f"Message sent to {recipient.username}.")
     return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
+
+
+@require_http_methods(["POST"])
+def create_tag(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    name = (request.POST.get("name") or "").strip()
+    if not name:
+        messages.error(request, "Please provide a tag name.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/notes/new"))
+
+    tag, created = Tag.objects.get_or_create(name=name)
+    if created:
+        messages.success(request, f"Tag '{tag.name}' added.")
+    else:
+        messages.info(request, f"Tag '{tag.name}' already exists.")
+
+    return redirect(request.META.get("HTTP_REFERER", "/smart/notes/new"))

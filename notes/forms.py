@@ -13,7 +13,7 @@ class NotesForm(forms.ModelForm):
     shared_with = forms.ModelMultipleChoiceField(
         queryset=User.objects.none(),
         required=False,
-        widget=forms.SelectMultiple,
+        widget=forms.CheckboxSelectMultiple,
         label='Share with'
     )
 
@@ -33,9 +33,8 @@ class NotesForm(forms.ModelForm):
             'category': forms.Select(attrs={
                 'class': 'rounded-lg border-gray-300 text-sm text-gray-700 focus:border-indigo-500 focus:ring-indigo-500',
             }),
-            'shared_with': forms.SelectMultiple(attrs={
-                'class': 'rounded-lg border-gray-300 text-sm text-gray-700 focus:border-indigo-500 focus:ring-indigo-500',
-                'size': '3',
+            'shared_with': forms.CheckboxSelectMultiple(attrs={
+                'class': 'space-y-2',
             }),
             'is_public': forms.CheckboxInput(attrs={
                 'class': 'h-4 w-4 rounded border-slate-300 text-teal-700 focus:ring-teal-500',

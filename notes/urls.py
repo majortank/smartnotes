@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('notes', views.NotesListView.as_view(), name='notes.list'),
+    path('tags/create', views.create_tag, name='tags.create'),
     path('community', views.CommunityView.as_view(), name='community'),
     path('inbox', views.InboxView.as_view(), name='inbox'),
     path('messages/send', views.send_message, name='messages.send'),
