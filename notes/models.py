@@ -148,3 +148,15 @@ class NoteShareLog(models.Model):
     share_link = models.ForeignKey(ShareLink, on_delete=models.SET_NULL, null=True, blank=True, related_name="share_logs")
     action = models.CharField(max_length=20, choices=ACTION_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
+    subject = models.CharField(max_length=120, blank=True)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Message from {self.sender.username}"

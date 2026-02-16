@@ -3,10 +3,10 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 from django.shortcuts import redirect, render
 from django.contrib import messages
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog
+from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog, Message
 from django.contrib.auth.models import User
 
 from .forms import NotesForm, ProfileForm
@@ -166,6 +166,51 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         profile, _ = Profile.objects.get_or_create(user=self.request.user)
         return profile
+
+
+class CommunityView(LoginRequiredMixin, TemplateView):
+    template_name = 'notes/community.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profiles = {
+            profile.user_id: profile
+            for profile in Profile.objects.select_related('user').all()
+        }
+        users = User.objects.order_by('username')
+        community_users = []
+        for user in users:
+            profile = profiles.get(user.id)
+            community_users.append({
+                'id': user.id,
+                'username': user.username,
+                'bio': profile.bio if profile else '',
+                'topics': profile.topics if profile else '',
+                'focus_areas': profile.focus_areas if profile else '',
+                'is_online': profile.is_online() if profile else False,
+            })
+
+        context['community_users'] = community_users
+        context['public_notes'] = Notes.objects.filter(is_public=True).select_related('user', 'category').prefetch_related('tags')
+        context['shared_notes'] = Notes.objects.filter(
+            Q(shared_with=self.request.user) | Q(shared_groups__members=self.request.user)
+        ).exclude(user=self.request.user).distinct()
+        context['unread_count'] = Message.objects.filter(recipient=self.request.user, is_read=False).count()
+        return context
+
+
+class InboxView(LoginRequiredMixin, ListView):
+    model = Message
+    context_object_name = 'messages'
+    template_name = 'notes/inbox.html'
+
+    def get_queryset(self):
+        return Message.objects.filter(recipient=self.request.user).select_related('sender').order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        Message.objects.filter(recipient=self.request.user, is_read=False).update(is_read=True)
+        return context
 
 
 def online_users(request):
@@ -454,3 +499,46 @@ def share_group_members(request, group_id):
 
     group.members.remove(member)
     return JsonResponse({"detail": "removed"})
+
+
+@require_http_methods(["POST"])
+def send_message(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    recipient_id = request.POST.get("recipient_id")
+    body = (request.POST.get("body") or "").strip()
+    subject = (request.POST.get("subject") or "").strip()
+    intent = request.POST.get("intent")
+
+    if not recipient_id:
+        messages.error(request, "Please choose someone to contact.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
+    if not body:
+        messages.error(request, "Please write a message before sending.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
+
+    try:
+        recipient = User.objects.get(pk=int(recipient_id))
+    except (User.DoesNotExist, ValueError):
+        messages.error(request, "That person could not be found.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
+
+    if recipient.id == request.user.id:
+        messages.error(request, "You cannot send a message to yourself.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
+
+    if intent == "request":
+        if subject:
+            subject = f"Note request: {subject}"
+        else:
+            subject = "Note request"
+
+    Message.objects.create(
+        sender=request.user,
+        recipient=recipient,
+        subject=subject,
+        body=body,
+    )
+    messages.success(request, f"Message sent to {recipient.username}.")
+    return redirect(request.META.get("HTTP_REFERER", "/smart/community"))

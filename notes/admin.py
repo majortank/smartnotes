@@ -23,6 +23,9 @@ class shareLinkAdmin(admin.ModelAdmin):
 class shareLogAdmin(admin.ModelAdmin):
     list_display = ('note', 'action', 'actor', 'created_at')
 
+class messageAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'recipient', 'subject', 'created_at', 'is_read')
+
 admin.site.register(models.Notes, notesAdmin)
 admin.site.register(models.Category, categoryAdmin)
 admin.site.register(models.Tag, tagAdmin)
@@ -30,3 +33,4 @@ admin.site.register(models.Profile, profileAdmin)
 admin.site.register(models.ShareGroup, shareGroupAdmin)
 admin.site.register(models.ShareLink, shareLinkAdmin)
 admin.site.register(models.NoteShareLog, shareLogAdmin)
+admin.site.register(models.Message, messageAdmin)
