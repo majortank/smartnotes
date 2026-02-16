@@ -16,7 +16,7 @@ CATEGORY_CHOICES = [
 ]
 
 class Category(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return self.name
@@ -38,7 +38,7 @@ class Notes(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
     shared_with = models.ManyToManyField(User, related_name='shared_notes', blank=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, default='Personal', related_name='notes')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='notes')
     tags = models.ManyToManyField(Tag, related_name='notes', blank=True)
 
     def __str__(self):

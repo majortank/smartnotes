@@ -13,6 +13,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartNotes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f172a;
+            --muted: #64748b;
+            --accent: #0f766e;
+            --accent-strong: #115e59;
+            --accent-soft: #ecfeff;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: var(--ink);
+            background: radial-gradient(1200px 600px at 10% -10%, #f0fdfa 0%, transparent 60%),
+                radial-gradient(800px 400px at 90% 0%, #fffbeb 0%, transparent 55%),
+                #f8fafc;
+        }
+
+        h1, h2, h3 {
+            font-family: "DM Serif Display", "Times New Roman", serif;
+        }
+    </style>
     {{form.media}}
     {% compress css %}
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
@@ -20,7 +45,7 @@
 
 </head>
 
-<body class="bg-slate-50 flex flex-col min-h-screen">
+<body class="flex min-h-screen flex-col">
 
     <div class='flex-grow'>
         <!-- Add this -->
@@ -29,19 +54,19 @@
             <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
                 <div class="sm:flex sm:items-center sm:justify-between">
                 <div class="text-center sm:text-left">
-                <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Welcome Back, {{ user.username }}!</h1>
-                    <p class="mt-1.5 text-sm text-gray-500">Let's write a new note! 🎉</p>
+                <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Welcome Back, {{ user.username }}!</h1>
+                    <p class="mt-1.5 text-sm text-slate-500">Ready to capture a new idea?</p>
                 </div>
             
                 <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
                     <a href="{% url 'notes.new' %}"
-                    class="block rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring"
+                    class="block rounded-lg bg-teal-700 px-5 py-3 text-sm font-medium text-white transition hover:bg-teal-800 focus:outline-none focus:ring focus:ring-teal-200"
                     type="button"
                     >
                     Create New Note
                 </a>
                     <a href="{% url 'logout' %}"
-                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-5 py-3 text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-5 py-3 text-slate-500 transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring focus:ring-teal-100"
                     type="button"
                     >
                     <span class="text-sm font-medium"> Logout </span>
@@ -54,16 +79,16 @@
                 <div class="sm:flex sm:items-center sm:justify-between">
                 <div class="text-center sm:text-left">
                     
-                <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
-                    <a href="{% url 'home' %}" class="text-indigo-600 hover:text-indigo-700">SmartNotes</a>
+                <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">
+                    <a href="{% url 'home' %}" class="text-teal-700 hover:text-teal-800">SmartNotes</a>
                 </h1>
             
-                    <p class="mt-1.5 text-sm text-gray-500">Got notes? login to write 🎉</p>
+                    <p class="mt-1.5 text-sm text-slate-500">Got notes? Login to write.</p>
                 </div>
                 <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
                     {% if not request.resolver_match.url_name == 'login' %}
                         <a href="{% url 'login' %}"
-                        class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-5 py-3 text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring"
+                        class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-5 py-3 text-slate-500 transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring focus:ring-teal-100"
                         type="button"
                         >
                         <span class="text-sm font-medium"> Login </span>
@@ -71,7 +96,7 @@
                     {% endif %}
                     {% if not request.resolver_match.url_name == 'register' %}
                     <a href="{% url 'register' %}"
-                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-5 py-3 text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-5 py-3 text-slate-500 transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring focus:ring-teal-100"
                     type="button"
                     >
                     <span class="text-sm font-medium"> Register </span>
@@ -88,7 +113,7 @@
         <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script> 
     <!-- End of new HTML -->
 
-    <div class="container mx-auto mt-4">
+    <div class="container mx-auto mt-6 px-4">
         {% block content %}
         {% endblock content %}
     </div>
@@ -122,16 +147,16 @@
     {% endif %}
     </div>
     <!-- Footer -->
-    <footer class="bg-gray-50">
+    <footer class="bg-white/60 backdrop-blur">
         <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
             <div class="sm:flex sm:items-center sm:justify-between">
             <div class="flex justify-center items-center sm:justify-start">
-                <ion-icon name="document-text-outline" class="text-5xl text-indigo-700 hover:text-indigo-200">
+                <ion-icon name="document-text-outline" class="text-5xl text-teal-700 hover:text-teal-500">
                 </ion-icon>
-                <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
-                    <a href="{% url 'home' %}" class="text-indigo-600 hover:text-indigo-200">SmartNotes</a>
+                <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">
+                    <a href="{% url 'home' %}" class="text-teal-700 hover:text-teal-500">SmartNotes</a>
             </div>
-            <p class="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-right">
+            <p class="mt-4 text-center text-sm text-slate-500 lg:mt-0 lg:text-right">
                 Copyright &copy; SmartNotes 2024. All rights reserved.
             </p>
             </div>

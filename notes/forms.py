@@ -1,5 +1,5 @@
 from django import forms
-from .models import Notes, Tag
+from .models import Notes, Tag, Category
 from django.contrib.auth.models import User
 
 
@@ -45,9 +45,11 @@ class NotesForm(forms.ModelForm):
         super(NotesForm, self).__init__(*args, **kwargs)
         if user:
             self.fields['shared_with'].queryset = User.objects.exclude(pk=user.pk)
-            
-        # Set initial category if needed
-        self.fields['category'].initial = 'Personal'
+
+        self.fields['category'].queryset = Category.objects.order_by('name')
+        default_category = Category.objects.filter(name='Personal').first()
+        if default_category:
+            self.fields['category'].initial = default_category
         
         # Add help text for shared_with
         self.fields['shared_with'].help_text = 'Hold Ctrl (Cmd on Mac) to select multiple users'
