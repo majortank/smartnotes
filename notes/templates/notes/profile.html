@@ -1,0 +1,38 @@
+{% extends "_base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6">
+  <div class="rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm">
+    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 class="text-3xl text-slate-900">Your profile</h1>
+        <p class="text-sm text-slate-500">Tell the community what you are working on.</p>
+      </div>
+      <a href="{% url 'notes.list' %}"
+         class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
+        Back to notes
+      </a>
+    </div>
+  </div>
+
+  <form method="post" class="space-y-6 rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm">
+    {% csrf_token %}
+    <div>
+      <label class="block text-sm font-medium text-slate-700">{{ form.bio.label }}</label>
+      {{ form.bio }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700">{{ form.topics.label }}</label>
+      {{ form.topics }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700">{{ form.focus_areas.label }}</label>
+      {{ form.focus_areas }}
+    </div>
+    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white">
+      Save profile
+    </button>
+  </form>
+</div>
+{% endblock %}

@@ -75,6 +75,13 @@
             {{ form.tags }}
           </div>
         </div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <label class="flex items-center gap-2 text-sm text-slate-700">
+            {{ form.is_public }}
+            <span>Share to community</span>
+          </label>
+          <p class="mt-1 text-xs text-slate-500">Public notes appear on the collaborative feed.</p>
+        </div>
         <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs text-slate-500">
           Tip: use the toolbar to add headings, quotes, and code blocks for clarity.
         </div>

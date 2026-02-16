@@ -58,6 +58,12 @@
                 </div>
             
                 <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+                    <a href="{% url 'profile' %}"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-5 py-3 text-slate-500 transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring focus:ring-teal-100"
+                    type="button"
+                    >
+                    <span class="text-sm font-medium"> Profile </span>
+                </a>
                     <a href="{% url 'notes.new' %}"
                     class="block rounded-lg bg-teal-700 px-5 py-3 text-sm font-medium text-white transition hover:bg-teal-800 focus:outline-none focus:ring focus:ring-teal-200"
                     type="button"

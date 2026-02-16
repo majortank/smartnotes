@@ -1,5 +1,5 @@
 from django import forms
-from .models import Notes, Tag, Category
+from .models import Notes, Tag, Category, Profile
 from django.contrib.auth.models import User
 
 
@@ -19,7 +19,7 @@ class NotesForm(forms.ModelForm):
 
     class Meta:
         model = Notes
-        fields = ['title', 'text', 'category', 'shared_with', 'tags']
+        fields = ['title', 'text', 'category', 'shared_with', 'tags', 'is_public']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'w-full rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400',
@@ -37,13 +37,17 @@ class NotesForm(forms.ModelForm):
                 'class': 'rounded-lg border-gray-300 text-sm text-gray-700 focus:border-indigo-500 focus:ring-indigo-500',
                 'size': '3',
             }),
+            'is_public': forms.CheckboxInput(attrs={
+                'class': 'h-4 w-4 rounded border-slate-300 text-teal-700 focus:ring-teal-500',
+            }),
         }
         labels = {
             'title': 'Title',
             'text': 'Body',
             'category': 'Category',
             'shared_with': 'Share with',
-            'tags': 'Tags'
+            'tags': 'Tags',
+            'is_public': 'Make note public'
         }
 
     def __init__(self, *args, **kwargs):
@@ -60,3 +64,31 @@ class NotesForm(forms.ModelForm):
         
         # Add help text for shared_with
         self.fields['shared_with'].help_text = 'Hold Ctrl (Cmd on Mac) to select multiple users'
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'topics', 'focus_areas']
+        widgets = {
+            'bio': forms.Textarea(attrs={
+                'class': 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-200',
+                'rows': 4,
+                'placeholder': 'Short bio...'
+            }),
+            'topics': forms.Textarea(attrs={
+                'class': 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-200',
+                'rows': 3,
+                'placeholder': 'Topics you care about...'
+            }),
+            'focus_areas': forms.Textarea(attrs={
+                'class': 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-200',
+                'rows': 3,
+                'placeholder': 'Current focus areas...'
+            }),
+        }
+        labels = {
+            'bio': 'Bio',
+            'topics': 'Topics',
+            'focus_areas': 'Focus areas',
+        }

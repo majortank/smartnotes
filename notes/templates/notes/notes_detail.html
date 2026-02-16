@@ -16,6 +16,11 @@
           {{ note.category.name }}
         </span>
         {% endif %}
+        {% if note.is_public %}
+        <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+          Public
+        </span>
+        {% endif %}
         {% if note.tags.count %}
           {% for tag in note.tags.all %}
           <span class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs text-amber-700">

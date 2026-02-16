@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog
 from django.contrib.auth.models import User
 
-from .forms import NotesForm
+from .forms import NotesForm, ProfileForm
 
 from django.db.models import Q
 from django.views.decorators.http import require_http_methods
@@ -34,6 +34,8 @@ class NotesListView(LoginRequiredMixin, ListView):
             Q(shared_with=self.request.user) | Q(shared_groups__members=self.request.user)
         ).exclude(user=self.request.user).distinct()
         context['shared_by'] = Notes.objects.filter(user=self.request.user)
+        context['public_notes'] = Notes.objects.filter(is_public=True).select_related('user', 'category').prefetch_related('tags')
+        context['community_profiles'] = Profile.objects.select_related('user').order_by('user__username')
         context['share_users'] = User.objects.exclude(pk=self.request.user.pk).order_by('username')
         context['share_groups'] = ShareGroup.objects.filter(owner=self.request.user).order_by('name')
         return context
@@ -43,7 +45,7 @@ class NoteAccessMixin(LoginRequiredMixin):
     def get_queryset(self):
         user = self.request.user
         return Notes.objects.filter(
-            Q(user=user) | Q(shared_with=user) | Q(shared_groups__members=user)
+            Q(user=user) | Q(shared_with=user) | Q(shared_groups__members=user) | Q(is_public=True)
         ).distinct()
 
     def dispatch(self, request, *args, **kwargs):
@@ -153,6 +155,17 @@ class NotesDeleteView(NoteOwnerMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['note'] = self.get_object()
         return context
+
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = 'notes/profile.html'
+    success_url = '/smart/notes'
+
+    def get_object(self, queryset=None):
+        profile, _ = Profile.objects.get_or_create(user=self.request.user)
+        return profile
 
 
 def online_users(request):

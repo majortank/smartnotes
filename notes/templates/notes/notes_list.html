@@ -25,11 +25,18 @@
                     </a>
                     <p class="text-xs text-slate-500">Updated {{ note.updated_at|date:"M d, Y" }}</p>
                 </div>
-                {% if note.category %}
-                <span class="rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-teal-700">
-                    {{ note.category.name }}
-                </span>
-                {% endif %}
+                <div class="flex flex-wrap items-center gap-2">
+                    {% if note.is_public %}
+                    <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                        Public
+                    </span>
+                    {% endif %}
+                    {% if note.category %}
+                    <span class="rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-teal-700">
+                        {{ note.category.name }}
+                    </span>
+                    {% endif %}
+                </div>
             </div>
             <div class="mt-3 max-h-24 overflow-hidden text-sm text-slate-600">
                 {{ note.rendered_text|safe }}
@@ -120,6 +127,78 @@
             {% empty %}
             <div class="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-6 text-sm text-slate-500">
                 No shared notes yet.
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl text-slate-900">Community feed</h2>
+            <span class="text-sm text-slate-500">Public notes shared by everyone.</span>
+        </div>
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {% for note in public_notes %}
+            <article class="flex h-full flex-col rounded-2xl border border-slate-200 bg-white/70 p-5 shadow-sm">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <a href="{% url 'notes.detail' pk=note.id %}" class="text-lg font-semibold text-slate-900 hover:text-teal-700">
+                            {{ note.title }}
+                        </a>
+                        <p class="text-xs text-slate-500">By {{ note.user.username }}</p>
+                    </div>
+                    <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                        Public
+                    </span>
+                </div>
+                <div class="mt-3 max-h-24 overflow-hidden text-sm text-slate-600">
+                    {{ note.rendered_text|safe }}
+                </div>
+                {% if note.tags.count %}
+                <div class="mt-4 flex flex-wrap gap-2">
+                    {% for tag in note.tags.all %}
+                    <span class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs text-amber-700">
+                        {{ tag.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </article>
+            {% empty %}
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-6 text-sm text-slate-500">
+                No public notes yet. Share one to kick off collaboration.
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl text-slate-900">People directory</h2>
+            <span class="text-sm text-slate-500">Bios, topics, and focus areas.</span>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {% for profile in community_profiles %}
+            <article class="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900">{{ profile.user.username }}</h3>
+                        <p class="text-xs text-slate-500">{{ profile.bio|default:"No bio yet." }}</p>
+                    </div>
+                    {% if profile.is_online %}
+                    <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">Online</span>
+                    {% else %}
+                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">Offline</span>
+                    {% endif %}
+                </div>
+                <div class="mt-3 space-y-2 text-xs text-slate-600">
+                    <p><span class="font-medium text-slate-700">Topics:</span> {{ profile.topics|default:"Not listed" }}</p>
+                    <p><span class="font-medium text-slate-700">Focus:</span> {{ profile.focus_areas|default:"Not listed" }}</p>
+                </div>
+            </article>
+            {% empty %}
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-6 text-sm text-slate-500">
+                No profiles yet.
             </div>
             {% endfor %}
         </div>
