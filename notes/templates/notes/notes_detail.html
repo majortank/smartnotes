@@ -45,6 +45,87 @@
   </div>
   <p class="text-xs text-slate-500">Last updated {{ note.updated_at|date:"F d, Y, H:i" }}</p>
 </div>
+
+{% if note.user_id == user.id %}
+<div class="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm">
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-wide text-slate-400">Share</p>
+      <h3 class="text-xl text-slate-900">Share this note</h3>
+    </div>
+  </div>
+  <div class="mt-4 grid gap-4 md:grid-cols-2">
+    <form method="post" action="{% url 'notes.share_users' note_id=note.id %}" class="space-y-2">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      <input type="hidden" name="redirect" value="true">
+      <label class="block text-sm font-medium text-slate-700">Share with user</label>
+      <select name="user_id" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+        {% for share_user in share_users %}
+          <option value="{{ share_user.id }}">{{ share_user.username }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-medium text-white">Share</button>
+    </form>
+
+    <form method="post" action="{% url 'notes.share_groups.share' note_id=note.id %}" class="space-y-2">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      <input type="hidden" name="redirect" value="true">
+      <label class="block text-sm font-medium text-slate-700">Share with group</label>
+      <select name="group_id" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+        {% for group in share_groups %}
+          <option value="{{ group.id }}">{{ group.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-medium text-white">Share</button>
+    </form>
+  </div>
+
+  <div class="mt-6 grid gap-4 md:grid-cols-2">
+    <form method="post" action="{% url 'notes.share_groups' %}" class="space-y-2">
+      {% csrf_token %}
+      <label class="block text-sm font-medium text-slate-700">Create group</label>
+      <div class="flex gap-2">
+        <input name="name" type="text" placeholder="Team Alpha" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+        <button type="submit" class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600">Create</button>
+      </div>
+    </form>
+
+    <form method="post" action="{% url 'notes.share_links' note_id=note.id %}" class="space-y-2">
+      {% csrf_token %}
+      <input type="hidden" name="redirect" value="true">
+      <label class="block text-sm font-medium text-slate-700">Create share link</label>
+      <div class="flex flex-wrap items-center gap-2">
+        <input name="expires_minutes" type="number" min="1" placeholder="Expires (minutes)" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+        <label class="inline-flex items-center gap-2 text-xs text-slate-600">
+          <input type="checkbox" name="can_edit" value="true">
+          Allow edit
+        </label>
+        <button type="submit" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-medium text-white">Create</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-6">
+    <p class="text-sm font-medium text-slate-700">Existing share links</p>
+    <div class="mt-2 space-y-2">
+      {% for link in note.share_links.all %}
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 p-2 text-xs text-slate-600">
+          <span>{{ link.token }}</span>
+          <form method="post" action="{% url 'notes.share_links.revoke' note_id=note.id link_id=link.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="redirect" value="true">
+            <button type="submit" class="rounded-lg border border-rose-200 px-2 py-1 text-rose-700">Revoke</button>
+          </form>
+        </div>
+      {% empty %}
+        <p class="text-xs text-slate-500">No share links yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 

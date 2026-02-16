@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
+from django.shortcuts import redirect, render
+from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -32,6 +34,8 @@ class NotesListView(LoginRequiredMixin, ListView):
             Q(shared_with=self.request.user) | Q(shared_groups__members=self.request.user)
         ).exclude(user=self.request.user).distinct()
         context['shared_by'] = Notes.objects.filter(user=self.request.user)
+        context['share_users'] = User.objects.exclude(pk=self.request.user.pk).order_by('username')
+        context['share_groups'] = ShareGroup.objects.filter(owner=self.request.user).order_by('name')
         return context
 
 
@@ -42,16 +46,66 @@ class NoteAccessMixin(LoginRequiredMixin):
             Q(user=user) | Q(shared_with=user) | Q(shared_groups__members=user)
         ).distinct()
 
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except Notes.DoesNotExist:
+            return render(
+                request,
+                "404.html",
+                {
+                    "title": "Note not found",
+                    "message": "We could not find that note. It may have been removed or shared access ended.",
+                },
+                status=404,
+            )
+        return super().dispatch(request, *args, **kwargs)
+
 
 class NoteOwnerMixin(LoginRequiredMixin):
     def get_queryset(self):
         return Notes.objects.filter(user=self.request.user)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.object = Notes.objects.get(pk=kwargs.get("pk"))
+        except Notes.DoesNotExist:
+            return render(
+                request,
+                "404.html",
+                {
+                    "title": "Note not found",
+                    "message": "We could not find that note. It may have been removed or shared access ended.",
+                },
+                status=404,
+            )
+
+        if self.object.user_id != request.user.id:
+            return render(
+                request,
+                "403.html",
+                {
+                    "title": "You do not have access",
+                    "message": "This note is private. Only the owner can edit or delete it.",
+                },
+                status=403,
+            )
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class NotesDetailView(NoteAccessMixin, DetailView):
     model = Notes
     context_object_name = 'note'
     template_name = 'notes/notes_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        note = self.get_object()
+        if note.user_id == self.request.user.id:
+            context['share_users'] = User.objects.exclude(pk=self.request.user.pk).order_by('username')
+            context['share_groups'] = ShareGroup.objects.filter(owner=self.request.user).order_by('name')
+        return context
 
 
 class NotesCreateView(LoginRequiredMixin, CreateView):
@@ -185,6 +239,9 @@ def share_links(request, note_id):
         share_link=link,
         action="share_link",
     )
+    if request.POST.get("redirect") == "true":
+        messages.success(request, f"Share link created: {link.token}")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
     return JsonResponse(
         {
             "id": link.id,
@@ -220,7 +277,106 @@ def revoke_share_link(request, note_id, link_id):
         action="revoke_link",
     )
     link.delete()
+    if request.POST.get("redirect") == "true":
+        messages.success(request, "Share link revoked.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
     return JsonResponse({"detail": "revoked"})
+
+
+@require_http_methods(["POST"])
+def share_user(request, note_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    try:
+        note = Notes.objects.get(pk=note_id, user=request.user)
+    except Notes.DoesNotExist:
+        return JsonResponse({"detail": "Not found."}, status=404)
+
+    action = request.POST.get("action")
+    user_id = request.POST.get("user_id")
+    if action not in {"add", "remove"}:
+        return JsonResponse({"detail": "Invalid action."}, status=400)
+    if not user_id:
+        return JsonResponse({"detail": "user_id is required."}, status=400)
+
+    try:
+        target = User.objects.get(pk=int(user_id))
+    except (User.DoesNotExist, ValueError):
+        return JsonResponse({"detail": "User not found."}, status=404)
+
+    if action == "add":
+        note.shared_with.add(target)
+        NoteShareLog.objects.create(
+            note=note,
+            actor=request.user,
+            target_user=target,
+            action="share_user",
+        )
+        if request.POST.get("redirect") == "true":
+            messages.success(request, f"Shared with {target.username}.")
+            return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
+        return JsonResponse({"detail": "added"})
+
+    note.shared_with.remove(target)
+    NoteShareLog.objects.create(
+        note=note,
+        actor=request.user,
+        target_user=target,
+        action="revoke_user",
+    )
+    if request.POST.get("redirect") == "true":
+        messages.success(request, f"Revoked {target.username}.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
+    return JsonResponse({"detail": "removed"})
+
+
+@require_http_methods(["POST"])
+def share_group(request, note_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    try:
+        note = Notes.objects.get(pk=note_id, user=request.user)
+    except Notes.DoesNotExist:
+        return JsonResponse({"detail": "Not found."}, status=404)
+
+    action = request.POST.get("action")
+    group_id = request.POST.get("group_id")
+    if action not in {"add", "remove"}:
+        return JsonResponse({"detail": "Invalid action."}, status=400)
+    if not group_id:
+        return JsonResponse({"detail": "group_id is required."}, status=400)
+
+    try:
+        group = ShareGroup.objects.get(pk=int(group_id), owner=request.user)
+    except (ShareGroup.DoesNotExist, ValueError):
+        return JsonResponse({"detail": "Group not found."}, status=404)
+
+    if action == "add":
+        note.shared_groups.add(group)
+        NoteShareLog.objects.create(
+            note=note,
+            actor=request.user,
+            target_group=group,
+            action="share_group",
+        )
+        if request.POST.get("redirect") == "true":
+            messages.success(request, f"Shared with group {group.name}.")
+            return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
+        return JsonResponse({"detail": "added"})
+
+    note.shared_groups.remove(group)
+    NoteShareLog.objects.create(
+        note=note,
+        actor=request.user,
+        target_group=group,
+        action="revoke_group",
+    )
+    if request.POST.get("redirect") == "true":
+        messages.success(request, f"Revoked group {group.name}.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
+    return JsonResponse({"detail": "removed"})
 
 
 @require_http_methods(["GET", "POST"])

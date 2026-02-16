@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+
+{% block content %}
+<div class="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white/80 p-6 text-center shadow-sm">
+  <p class="text-xs uppercase tracking-wide text-slate-400">Access denied</p>
+  <h1 class="mt-2 text-3xl text-slate-900">{{ title|default:"You do not have access" }}</h1>
+  <p class="mt-3 text-sm text-slate-600">{{ message|default:"That action is not available." }}</p>
+  <div class="mt-6">
+    <a href="{% url 'notes.list' %}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">
+      Back to notes
+    </a>
+  </div>
+</div>
+{% endblock %}

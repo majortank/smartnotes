@@ -43,6 +43,47 @@
                 {% endfor %}
             </div>
             {% endif %}
+
+            <details class="mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
+                <summary class="cursor-pointer text-sm font-medium text-slate-700">Share</summary>
+                <div class="mt-3 space-y-3">
+                    <form method="post" action="{% url 'notes.share_users' note_id=note.id %}" class="space-y-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="redirect" value="true">
+                        <label class="block text-xs font-medium text-slate-600">User</label>
+                        <select name="user_id" class="w-full rounded border border-slate-200 px-2 py-1">
+                            {% for share_user in share_users %}
+                              <option value="{{ share_user.id }}">{{ share_user.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="rounded bg-teal-700 px-2 py-1 text-xs font-medium text-white">Share</button>
+                    </form>
+
+                    <form method="post" action="{% url 'notes.share_groups.share' note_id=note.id %}" class="space-y-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="redirect" value="true">
+                        <label class="block text-xs font-medium text-slate-600">Group</label>
+                        <select name="group_id" class="w-full rounded border border-slate-200 px-2 py-1">
+                            {% for group in share_groups %}
+                              <option value="{{ group.id }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="rounded bg-teal-700 px-2 py-1 text-xs font-medium text-white">Share</button>
+                    </form>
+
+                    <form method="post" action="{% url 'notes.share_links' note_id=note.id %}" class="space-y-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="redirect" value="true">
+                        <label class="block text-xs font-medium text-slate-600">Share link</label>
+                        <div class="flex items-center gap-2">
+                            <input name="expires_minutes" type="number" min="1" placeholder="Minutes" class="w-full rounded border border-slate-200 px-2 py-1">
+                            <button type="submit" class="rounded bg-teal-700 px-2 py-1 text-xs font-medium text-white">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </details>
         </article>
         {% empty %}
         <div class="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-6 text-sm text-slate-500">
