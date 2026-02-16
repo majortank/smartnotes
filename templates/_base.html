@@ -69,8 +69,13 @@
                             Community
                         </a>
                         <a href="{% url 'inbox' %}"
-                           class="rounded-full border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-white">
+                           class="relative rounded-full border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-white">
                             Inbox
+                            {% if unread_count %}
+                            <span class="absolute -top-1 -right-1 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                                {{ unread_count }}
+                            </span>
+                            {% endif %}
                         </a>
                         <a href="{% url 'profile' %}"
                            class="rounded-full border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-white">

@@ -528,6 +528,24 @@ def send_message(request):
         messages.error(request, "You cannot send a message to yourself.")
         return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
 
+    now = timezone.now()
+    recent_to_recipient = Message.objects.filter(
+        sender=request.user,
+        recipient=recipient,
+        created_at__gte=now - timezone.timedelta(minutes=1),
+    ).count()
+    if recent_to_recipient >= 1:
+        messages.error(request, "Please wait a minute before messaging this person again.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
+
+    hourly_count = Message.objects.filter(
+        sender=request.user,
+        created_at__gte=now - timezone.timedelta(hours=1),
+    ).count()
+    if hourly_count >= 10:
+        messages.error(request, "You have reached the hourly message limit. Please try again later.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/community"))
+
     if intent == "request":
         if subject:
             subject = f"Note request: {subject}"
