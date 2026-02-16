@@ -9,11 +9,15 @@
   "main": "index.js",
   "dependencies": {
     "@tiptap/core": "^2.11.5",
+    "@tiptap/extension-collaboration": "^2.11.5",
+    "@tiptap/extension-collaboration-cursor": "^2.11.5",
     "@tiptap/extension-link": "^2.11.5",
     "@tiptap/extension-placeholder": "^2.11.5",
     "@tiptap/extension-underline": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "markdown-it": "^14.1.0",
+    "y-websocket": "^2.0.4",
+    "yjs": "^13.6.16",
     "ansi-regex": "^6.0.1",
     "ansi-styles": "^6.2.1",
     "any-promise": "^1.3.0",
@@ -106,6 +110,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "collab": "y-websocket --port 1234",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

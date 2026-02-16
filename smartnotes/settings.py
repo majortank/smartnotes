@@ -154,5 +154,9 @@ STATICFILES_FINDERS =  [
 ]
 
 
+# Collaboration websocket URL (y-websocket)
+COLLAB_URL = os.environ.get('COLLAB_URL', 'ws://localhost:1234')
+
+
 # CRFS settings
 # CSRF_FAILURE_VIEW = 'home.views.csrf_failure'

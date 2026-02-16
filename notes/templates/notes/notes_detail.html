@@ -88,6 +88,48 @@
   </div>
 
   <div class="mt-6 grid gap-4 md:grid-cols-2">
+    <form method="post" action="{% url 'notes.collaborators' note_id=note.id %}" class="space-y-2">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      <input type="hidden" name="redirect" value="true">
+      <label class="block text-sm font-medium text-slate-700">Add collaborator</label>
+      <div class="flex flex-wrap items-center gap-2">
+        <select name="user_id" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+          {% for share_user in share_users %}
+            <option value="{{ share_user.id }}">{{ share_user.username }}</option>
+          {% endfor %}
+        </select>
+        <select name="role" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+          <option value="viewer">Viewer</option>
+          <option value="editor">Editor</option>
+        </select>
+        <button type="submit" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-medium text-white">Add</button>
+      </div>
+    </form>
+
+    <div class="space-y-2">
+      <p class="text-sm font-medium text-slate-700">Collaborators</p>
+      <div class="space-y-2">
+        {% for collab in note.collaborators.all %}
+        <div class="flex items-center justify-between rounded-lg border border-slate-200 p-2 text-xs text-slate-600">
+          <span>{{ collab.user.username }} · {{ collab.role }}</span>
+          <form method="post" action="{% url 'notes.collaborators' note_id=note.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="remove">
+            <input type="hidden" name="user_id" value="{{ collab.user.id }}">
+            <input type="hidden" name="role" value="viewer">
+            <input type="hidden" name="redirect" value="true">
+            <button type="submit" class="rounded-lg border border-rose-200 px-2 py-1 text-rose-700">Remove</button>
+          </form>
+        </div>
+        {% empty %}
+        <p class="text-xs text-slate-500">No collaborators yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 grid gap-4 md:grid-cols-2">
     <form method="post" action="{% url 'notes.share_groups' %}" class="space-y-2">
       {% csrf_token %}
       <label class="block text-sm font-medium text-slate-700">Create group</label>

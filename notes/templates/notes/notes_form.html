@@ -63,7 +63,18 @@
             <button type="button" data-action="link" title="Add link">Link</button>
           </div>
           {{ form.text }}
-          <div id="tiptap-editor" class="tiptap-surface" aria-label="Note body"></div>
+          <div
+            id="tiptap-editor"
+            class="tiptap-surface"
+            aria-label="Note body"
+            data-collab-enabled="{% if form.instance.pk %}true{% else %}false{% endif %}"
+            data-note-id="{{ form.instance.pk|default:'' }}"
+            data-collab-url="{{ collab_url }}"
+            data-user-name="{{ user.username }}"
+          ></div>
+          {% if form.instance.pk %}
+          <p class="text-xs text-slate-500">Live collaboration is enabled for this note.</p>
+          {% endif %}
         </div>
       </section>
 

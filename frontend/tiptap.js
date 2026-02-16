@@ -1,9 +1,13 @@
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
+import Collaboration from "@tiptap/extension-collaboration";
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import MarkdownIt from "markdown-it";
+import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
 import "./tiptap.css";
 
 const editorElement = document.getElementById("tiptap-editor");
@@ -17,21 +21,50 @@ if (editorElement && inputElement) {
     breaks: true,
   });
 
+  const collabEnabled = editorElement.dataset.collabEnabled === "true";
+  const noteId = editorElement.dataset.noteId;
+  const collabUrl = editorElement.dataset.collabUrl || "ws://localhost:1234";
+  const userName = editorElement.dataset.userName || "Anonymous";
+  let provider = null;
+  let ydoc = null;
+
+  if (collabEnabled && noteId) {
+    ydoc = new Y.Doc();
+    provider = new WebsocketProvider(collabUrl, `note-${noteId}`, ydoc);
+  }
+
+  const extensions = [
+    StarterKit,
+    Underline,
+    Link.configure({
+      openOnClick: false,
+      autolink: true,
+      defaultProtocol: "https",
+    }),
+    Placeholder.configure({
+      placeholder: "Write your thoughts here...",
+    }),
+  ];
+
+  if (collabEnabled && ydoc && provider) {
+    extensions.push(
+      Collaboration.configure({
+        document: ydoc,
+      }),
+      CollaborationCursor.configure({
+        provider,
+        user: {
+          name: userName,
+          color: pickColor(userName),
+        },
+      })
+    );
+  }
+
   const editor = new Editor({
     element: editorElement,
-    extensions: [
-      StarterKit,
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        defaultProtocol: "https",
-      }),
-      Placeholder.configure({
-        placeholder: "Write your thoughts here...",
-      }),
-    ],
-    content: inputElement.value || "",
+    extensions,
+    content: collabEnabled ? "" : inputElement.value || "",
     onUpdate: ({ editor }) => {
       inputElement.value = editor.getHTML();
       toggleActiveStates(editor);
@@ -40,6 +73,18 @@ if (editorElement && inputElement) {
       toggleActiveStates(editor);
     },
   });
+
+  if (collabEnabled && ydoc && provider) {
+    provider.on("sync", (isSynced) => {
+      if (!isSynced) {
+        return;
+      }
+      const current = editor.getHTML();
+      if (!current && inputElement.value) {
+        editor.commands.setContent(inputElement.value);
+      }
+    });
+  }
 
   editor.view.dom.addEventListener("paste", (event) => {
     const clipboard = event.clipboardData;
@@ -141,6 +186,23 @@ function isHtmlPlainText(html, text) {
   const stripped = html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
   const normalizedText = text.replace(/\s+/g, " ").trim();
   return stripped === normalizedText;
+}
+
+function pickColor(input) {
+  const colors = [
+    "#0f766e",
+    "#ea580c",
+    "#7c3aed",
+    "#2563eb",
+    "#db2777",
+    "#0891b2",
+  ];
+  let hash = 0;
+  for (let i = 0; i < input.length; i += 1) {
+    hash = input.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
 }
 
 function setLink(editor) {

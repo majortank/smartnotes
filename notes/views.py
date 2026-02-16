@@ -6,13 +6,14 @@ from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog, Message, Tag
+from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog, Message, Tag, NoteCollaborator
 from django.contrib.auth.models import User
 
 from .forms import NotesForm, ProfileForm
 
 from django.db.models import Q
 from django.views.decorators.http import require_http_methods
+from django.conf import settings
 
 
 
@@ -45,7 +46,11 @@ class NoteAccessMixin(LoginRequiredMixin):
     def get_queryset(self):
         user = self.request.user
         return Notes.objects.filter(
-            Q(user=user) | Q(shared_with=user) | Q(shared_groups__members=user) | Q(is_public=True)
+            Q(user=user)
+            | Q(shared_with=user)
+            | Q(shared_groups__members=user)
+            | Q(is_public=True)
+            | Q(collaborators__user=user)
         ).distinct()
 
     def dispatch(self, request, *args, **kwargs):
@@ -96,6 +101,46 @@ class NoteOwnerMixin(LoginRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class NoteEditMixin(LoginRequiredMixin):
+    def get_queryset(self):
+        user = self.request.user
+        return Notes.objects.filter(
+            Q(user=user) | Q(collaborators__user=user, collaborators__role="editor")
+        ).distinct()
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.object = Notes.objects.get(pk=kwargs.get("pk"))
+        except Notes.DoesNotExist:
+            return render(
+                request,
+                "404.html",
+                {
+                    "title": "Note not found",
+                    "message": "We could not find that note. It may have been removed or shared access ended.",
+                },
+                status=404,
+            )
+
+        is_owner = self.object.user_id == request.user.id
+        is_editor = NoteCollaborator.objects.filter(
+            note=self.object, user=request.user, role="editor"
+        ).exists()
+
+        if not (is_owner or is_editor):
+            return render(
+                request,
+                "403.html",
+                {
+                    "title": "You do not have access",
+                    "message": "You need editor access to update this note.",
+                },
+                status=403,
+            )
+
+        return super().dispatch(request, *args, **kwargs)
+
+
 class NotesDetailView(NoteAccessMixin, DetailView):
     model = Notes
     context_object_name = 'note'
@@ -137,9 +182,10 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tags_count'] = Tag.objects.count()
+        context['collab_url'] = getattr(settings, 'COLLAB_URL', 'ws://localhost:1234')
         return context
 
-class NotesUpdateView(NoteOwnerMixin, UpdateView):
+class NotesUpdateView(NoteEditMixin, UpdateView):
     model = Notes
     form_class = NotesForm
     success_url = '/smart/notes'
@@ -164,6 +210,7 @@ class NotesUpdateView(NoteOwnerMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tags_count'] = Tag.objects.count()
+        context['collab_url'] = getattr(settings, 'COLLAB_URL', 'ws://localhost:1234')
         return context
 
 class NotesDeleteView(NoteOwnerMixin, DeleteView):
@@ -216,6 +263,27 @@ class CommunityView(LoginRequiredMixin, TemplateView):
             Q(shared_with=self.request.user) | Q(shared_groups__members=self.request.user)
         ).exclude(user=self.request.user).distinct()
         context['unread_count'] = Message.objects.filter(recipient=self.request.user, is_read=False).count()
+        return context
+
+
+class ProfileDetailView(LoginRequiredMixin, TemplateView):
+    template_name = 'notes/profile_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        username = kwargs.get('username')
+        profile = Profile.objects.select_related('user').filter(user__username=username).first()
+        if not profile:
+            context['profile_missing'] = True
+            return context
+
+        public_notes = Notes.objects.filter(user=profile.user, is_public=True).select_related('category').prefetch_related('tags')
+        total_notes = Notes.objects.filter(user=profile.user).count()
+        context['profile_user'] = profile.user
+        context['profile'] = profile
+        context['public_notes'] = public_notes
+        context['public_count'] = public_notes.count()
+        context['total_count'] = total_notes
         return context
 
 
@@ -518,6 +586,61 @@ def share_group_members(request, group_id):
         return JsonResponse({"detail": "added"})
 
     group.members.remove(member)
+    return JsonResponse({"detail": "removed"})
+
+
+@require_http_methods(["POST"])
+def share_collaborator(request, note_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    try:
+        note = Notes.objects.get(pk=note_id, user=request.user)
+    except Notes.DoesNotExist:
+        return JsonResponse({"detail": "Not found."}, status=404)
+
+    action = request.POST.get("action")
+    user_id = request.POST.get("user_id")
+    role = request.POST.get("role") or "viewer"
+    if action not in {"add", "remove"}:
+        return JsonResponse({"detail": "Invalid action."}, status=400)
+    if role not in {"editor", "viewer"}:
+        return JsonResponse({"detail": "Invalid role."}, status=400)
+    if not user_id:
+        return JsonResponse({"detail": "user_id is required."}, status=400)
+
+    try:
+        target = User.objects.get(pk=int(user_id))
+    except (User.DoesNotExist, ValueError):
+        return JsonResponse({"detail": "User not found."}, status=404)
+
+    if action == "add":
+        collaborator, _ = NoteCollaborator.objects.update_or_create(
+            note=note,
+            user=target,
+            defaults={"role": role},
+        )
+        NoteShareLog.objects.create(
+            note=note,
+            actor=request.user,
+            target_user=target,
+            action="share_user",
+        )
+        if request.POST.get("redirect") == "true":
+            messages.success(request, f"Added {target.username} as {collaborator.role}.")
+            return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
+        return JsonResponse({"detail": "added"})
+
+    NoteCollaborator.objects.filter(note=note, user=target).delete()
+    NoteShareLog.objects.create(
+        note=note,
+        actor=request.user,
+        target_user=target,
+        action="revoke_user",
+    )
+    if request.POST.get("redirect") == "true":
+        messages.success(request, f"Removed {target.username} from collaborators.")
+        return redirect(request.META.get("HTTP_REFERER", "/smart/notes"))
     return JsonResponse({"detail": "removed"})
 
 

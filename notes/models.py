@@ -150,6 +150,21 @@ class NoteShareLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class NoteCollaborator(models.Model):
+    ROLE_CHOICES = [
+        ("editor", "Editor"),
+        ("viewer", "Viewer"),
+    ]
+
+    note = models.ForeignKey(Notes, on_delete=models.CASCADE, related_name="collaborators")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="collaborations")
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="viewer")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('note', 'user')
+
+
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
