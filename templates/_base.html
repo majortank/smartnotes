@@ -48,35 +48,39 @@
 
     <div class='flex-grow'>
         <!-- Add this -->
-    <header>
+    <header class="sticky top-0 z-40 backdrop-blur">
         {% if user.is_authenticated %}
-            <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-                <div class="sm:flex sm:items-center sm:justify-between">
-                <div class="text-center sm:text-left">
-                <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Welcome Back, {{ user.username }}!</h1>
-                    <p class="mt-1.5 text-sm text-slate-500">Ready to capture a new idea?</p>
-                </div>
-            
-                <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
-                    <a href="{% url 'profile' %}"
-                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-5 py-3 text-slate-500 transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring focus:ring-teal-100"
-                    type="button"
-                    >
-                    <span class="text-sm font-medium"> Profile </span>
-                </a>
-                    <a href="{% url 'notes.new' %}"
-                    class="block rounded-lg bg-teal-700 px-5 py-3 text-sm font-medium text-white transition hover:bg-teal-800 focus:outline-none focus:ring focus:ring-teal-200"
-                    type="button"
-                    >
-                    Create New Note
-                </a>
-                    <a href="{% url 'logout' %}"
-                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-5 py-3 text-slate-500 transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring focus:ring-teal-100"
-                    type="button"
-                    >
-                    <span class="text-sm font-medium"> Logout </span>
-                </a>
-                </div>
+            <div class="mx-auto max-w-screen-xl px-4 py-5 sm:px-6 lg:px-8">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div class="flex items-center justify-between gap-6">
+                        <a href="{% url 'notes.list' %}" class="text-2xl font-bold text-slate-900 sm:text-3xl">
+                            SmartNotes
+                        </a>
+                        <span class="hidden text-sm text-slate-500 sm:inline">Welcome, {{ user.username }}</span>
+                    </div>
+
+                    <nav class="flex flex-wrap items-center gap-2">
+                        <a href="{% url 'notes.list' %}"
+                           class="rounded-full border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-white">
+                            Dashboard
+                        </a>
+                        <a href="{% url 'notes.list' %}#community"
+                           class="rounded-full border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-white">
+                            Community
+                        </a>
+                        <a href="{% url 'profile' %}"
+                           class="rounded-full border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-white">
+                            Profile
+                        </a>
+                        <a href="{% url 'notes.new' %}"
+                           class="rounded-full bg-teal-700 px-4 py-2 text-xs font-medium text-white transition hover:bg-teal-800">
+                            New note
+                        </a>
+                        <a href="{% url 'logout' %}"
+                           class="rounded-full border border-slate-200 px-4 py-2 text-xs font-medium text-slate-600 transition hover:bg-white">
+                            Logout
+                        </a>
+                    </nav>
                 </div>
             </div>
         {% else %}

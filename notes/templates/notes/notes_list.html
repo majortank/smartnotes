@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="mx-auto max-w-6xl space-y-10">
-    <section class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm">
+    <section class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm" id="dashboard">
         <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
                 <h2 class="text-3xl text-slate-900">Your Notes</h2>
@@ -99,7 +99,7 @@
         {% endfor %}
     </section>
 
-    <section class="space-y-4">
+    <section class="space-y-4" id="community">
         <div class="flex items-center justify-between">
             <h2 class="text-2xl text-slate-900">Shared Notes</h2>
             <span class="text-sm text-slate-500">Notes shared with you.</span>
