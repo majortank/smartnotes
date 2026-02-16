@@ -1,19 +1,7 @@
 from django.db import models
+import re
+import markdown
 from django.contrib.auth.models import User
-from django_quill.fields import QuillField
-
-CATEGORY_CHOICES = [
-    ('Personal', 'Personal'),
-    ('Work', 'Work'),
-    ('School/Education', 'School/Education'),
-    ('Shopping', 'Shopping'),
-    ('Travel', 'Travel'),
-    ('Recipes', 'Recipes'),
-    ('Health/Fitness', 'Health/Fitness'),
-    ('Finance', 'Finance'),
-    ('Projects', 'Projects'),
-    ('Ideas', 'Ideas'),
-]
 
 class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)
@@ -33,7 +21,7 @@ class Tag(models.Model):
 
 class Notes(models.Model):
     title = models.CharField(max_length=255)
-    text =  QuillField()
+    text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
@@ -43,6 +31,14 @@ class Notes(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def rendered_text(self):
+        if not self.text:
+            return ""
+        if re.search(r"</?[a-z][\s\S]*>", self.text):
+            return self.text
+        return markdown.markdown(self.text, extensions=["fenced_code", "tables", "sane_lists"])
 
     class Meta:
         verbose_name = 'Note'

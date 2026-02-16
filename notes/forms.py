@@ -20,9 +20,9 @@ class NotesForm(forms.ModelForm):
                 'placeholder': 'Enter title here...',
             }),
             'text': forms.Textarea(attrs={
-                'class': 'w-full rounded-lg text-sm min-h-[300px] focus:ring-0 placeholder-gray-400',
-                'placeholder': 'Write your thoughts here...',
-                'rows': '12',
+                'id': 'tiptap-input',
+                'class': 'hidden',
+                'rows': '8',
             }),
             'category': forms.Select(attrs={
                 'class': 'rounded-lg border-gray-300 text-sm text-gray-700 focus:border-indigo-500 focus:ring-indigo-500',
@@ -34,7 +34,7 @@ class NotesForm(forms.ModelForm):
         }
         labels = {
             'title': 'Title',
-            'text': 'Write your thoughts here:',
+            'text': 'Body',
             'category': 'Category',
             'shared_with': 'Share with',
             'tags': 'Tags'

@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     # Add notes app to the list of installed apps
     'notes',
     'compressor', # Add compressor to the list of installed apps
-    'django_quill', # Add django_quill to the list of installed apps
     'widget_tweaks', # Add widget_tweaks to the list of installed apps
 ]
 

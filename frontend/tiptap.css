@@ -1,0 +1,89 @@
+:root {
+  --editor-border: #e2e8f0;
+  --editor-bg: #ffffff;
+  --editor-muted: #94a3b8;
+  --editor-accent: #0f766e;
+  --editor-accent-soft: #ccfbf1;
+}
+
+.tiptap-surface {
+  min-height: 360px;
+  padding: 1.25rem;
+  border: 1px solid var(--editor-border);
+  border-radius: 1rem;
+  background: var(--editor-bg);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #0f172a;
+}
+
+.tiptap-surface .ProseMirror {
+  outline: none;
+}
+
+.tiptap-surface .ProseMirror:focus {
+  outline: none;
+}
+
+.tiptap-toolbar button {
+  border: 1px solid var(--editor-border);
+  background: #f8fafc;
+  color: #475569;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.6rem;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.tiptap-toolbar button:hover {
+  border-color: #cbd5f5;
+  background: #f1f5f9;
+  color: #0f766e;
+}
+
+.tiptap-toolbar button.is-active {
+  border-color: var(--editor-accent);
+  background: var(--editor-accent-soft);
+  color: var(--editor-accent);
+}
+
+.tiptap-toolbar .divider {
+  width: 1px;
+  height: 1.6rem;
+  background: var(--editor-border);
+}
+
+.tiptap-toolbar select {
+  border: 1px solid var(--editor-border);
+  border-radius: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.tiptap-surface .ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--editor-muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap-surface .ProseMirror a {
+  color: var(--editor-accent);
+  text-decoration: underline;
+}
+
+.tiptap-surface .ProseMirror blockquote {
+  border-left: 3px solid var(--editor-accent);
+  padding-left: 1rem;
+  color: #475569;
+}
+
+.tiptap-surface .ProseMirror pre {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}

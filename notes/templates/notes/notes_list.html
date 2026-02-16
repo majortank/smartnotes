@@ -32,7 +32,7 @@
                 {% endif %}
             </div>
             <div class="mt-3 max-h-24 overflow-hidden text-sm text-slate-600">
-                {{ note.text.html|safe }}
+                 {{ note.rendered_text|safe }}
             </div>
             {% if note.tags.count %}
             <div class="mt-4 flex flex-wrap gap-2">
@@ -73,7 +73,7 @@
                     {% endif %}
                 </div>
                 <div class="mt-3 max-h-24 overflow-hidden text-sm text-slate-600">
-                    {{ note.text.html|safe }}
+                    {{ note.rendered_text|safe }}
                 </div>
             </article>
             {% empty %}

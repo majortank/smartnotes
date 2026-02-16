@@ -1,6 +1,5 @@
 django
 ipython
-django 
 django-compressor
-django-quill-editor
 django-widget-tweaks
+markdown
