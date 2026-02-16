@@ -129,6 +129,11 @@ class NotesCreateView(LoginRequiredMixin, CreateView):
             self.object.tags.set(tags)
         return HttpResponseRedirect(self.get_success_url())
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
 class NotesUpdateView(NoteOwnerMixin, UpdateView):
     model = Notes
     form_class = NotesForm
@@ -145,6 +150,11 @@ class NotesUpdateView(NoteOwnerMixin, UpdateView):
         if tags:
             self.object.tags.set(tags)
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 class NotesDeleteView(NoteOwnerMixin, DeleteView):
     model = Notes

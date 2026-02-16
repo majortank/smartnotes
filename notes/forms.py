@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class NotesForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
-        queryset=Tag.objects.all(),
+        queryset=Tag.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label='Tags'
@@ -56,6 +56,8 @@ class NotesForm(forms.ModelForm):
         if user:
             self.fields['shared_with'].queryset = User.objects.exclude(pk=user.pk)
         self.fields['shared_with'].initial = []
+
+        self.fields['tags'].queryset = Tag.objects.order_by('name')
 
         self.fields['category'].queryset = Category.objects.order_by('name')
         default_category = Category.objects.filter(name='Personal').first()
