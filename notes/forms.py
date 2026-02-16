@@ -10,6 +10,12 @@ class NotesForm(forms.ModelForm):
         required=False,
         label='Tags'
     )
+    shared_with = forms.ModelMultipleChoiceField(
+        queryset=User.objects.none(),
+        required=False,
+        widget=forms.SelectMultiple,
+        label='Share with'
+    )
 
     class Meta:
         model = Notes
@@ -45,6 +51,7 @@ class NotesForm(forms.ModelForm):
         super(NotesForm, self).__init__(*args, **kwargs)
         if user:
             self.fields['shared_with'].queryset = User.objects.exclude(pk=user.pk)
+        self.fields['shared_with'].initial = []
 
         self.fields['category'].queryset = Category.objects.order_by('name')
         default_category = Category.objects.filter(name='Personal').first()
