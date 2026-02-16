@@ -4,12 +4,13 @@ from django.utils import timezone
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Notes, Profile
+from .models import Notes, Profile, ShareGroup, ShareLink, NoteShareLog
 from django.contrib.auth.models import User
 
 from .forms import NotesForm
 
 from django.db.models import Q
+from django.views.decorators.http import require_http_methods
 
 
 
@@ -136,3 +137,151 @@ def online_users(request):
     return JsonResponse(
         {"count": len(data), "online_count": online_count, "users": data}
     )
+
+
+@require_http_methods(["GET", "POST"])
+def share_links(request, note_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    try:
+        note = Notes.objects.get(pk=note_id, user=request.user)
+    except Notes.DoesNotExist:
+        return JsonResponse({"detail": "Not found."}, status=404)
+
+    if request.method == "GET":
+        links = note.share_links.order_by("-created_at")
+        data = [
+            {
+                "id": link.id,
+                "token": str(link.token),
+                "created_at": link.created_at.isoformat(),
+                "expires_at": link.expires_at.isoformat() if link.expires_at else None,
+                "can_edit": link.can_edit,
+                "is_active": link.is_active(),
+            }
+            for link in links
+        ]
+        return JsonResponse({"count": len(data), "links": data})
+
+    expires_minutes = request.POST.get("expires_minutes")
+    can_edit = request.POST.get("can_edit") == "true"
+    expires_at = None
+    if expires_minutes:
+        try:
+            expires_at = timezone.now() + timezone.timedelta(minutes=int(expires_minutes))
+        except ValueError:
+            return JsonResponse({"detail": "Invalid expires_minutes."}, status=400)
+
+    link = ShareLink.objects.create(
+        note=note,
+        created_by=request.user,
+        expires_at=expires_at,
+        can_edit=can_edit,
+    )
+    NoteShareLog.objects.create(
+        note=note,
+        actor=request.user,
+        share_link=link,
+        action="share_link",
+    )
+    return JsonResponse(
+        {
+            "id": link.id,
+            "token": str(link.token),
+            "created_at": link.created_at.isoformat(),
+            "expires_at": link.expires_at.isoformat() if link.expires_at else None,
+            "can_edit": link.can_edit,
+            "is_active": link.is_active(),
+        },
+        status=201,
+    )
+
+
+@require_http_methods(["POST"])
+def revoke_share_link(request, note_id, link_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    try:
+        note = Notes.objects.get(pk=note_id, user=request.user)
+    except Notes.DoesNotExist:
+        return JsonResponse({"detail": "Not found."}, status=404)
+
+    try:
+        link = ShareLink.objects.get(pk=link_id, note=note)
+    except ShareLink.DoesNotExist:
+        return JsonResponse({"detail": "Not found."}, status=404)
+
+    NoteShareLog.objects.create(
+        note=note,
+        actor=request.user,
+        share_link=link,
+        action="revoke_link",
+    )
+    link.delete()
+    return JsonResponse({"detail": "revoked"})
+
+
+@require_http_methods(["GET", "POST"])
+def share_groups(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    if request.method == "GET":
+        groups = ShareGroup.objects.filter(owner=request.user).order_by("name")
+        data = [
+            {
+                "id": group.id,
+                "name": group.name,
+                "members": list(group.members.values("id", "username")),
+                "created_at": group.created_at.isoformat(),
+            }
+            for group in groups
+        ]
+        return JsonResponse({"count": len(data), "groups": data})
+
+    name = (request.POST.get("name") or "").strip()
+    if not name:
+        return JsonResponse({"detail": "Name is required."}, status=400)
+
+    group = ShareGroup.objects.create(name=name, owner=request.user)
+    return JsonResponse(
+        {
+            "id": group.id,
+            "name": group.name,
+            "members": [],
+            "created_at": group.created_at.isoformat(),
+        },
+        status=201,
+    )
+
+
+@require_http_methods(["POST"])
+def share_group_members(request, group_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Authentication required."}, status=401)
+
+    try:
+        group = ShareGroup.objects.get(pk=group_id, owner=request.user)
+    except ShareGroup.DoesNotExist:
+        return JsonResponse({"detail": "Not found."}, status=404)
+
+    action = request.POST.get("action")
+    user_id = request.POST.get("user_id")
+    if action not in {"add", "remove"}:
+        return JsonResponse({"detail": "Invalid action."}, status=400)
+    if not user_id:
+        return JsonResponse({"detail": "user_id is required."}, status=400)
+
+    try:
+        member = User.objects.get(pk=int(user_id))
+    except (User.DoesNotExist, ValueError):
+        return JsonResponse({"detail": "User not found."}, status=404)
+
+    if action == "add":
+        group.members.add(member)
+        return JsonResponse({"detail": "added"})
+
+    group.members.remove(member)
+    return JsonResponse({"detail": "removed"})
