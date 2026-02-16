@@ -5,6 +5,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Notes, Profile
+from django.contrib.auth.models import User
 
 from .forms import NotesForm
 
@@ -104,22 +105,34 @@ def online_users(request):
         return JsonResponse({"detail": "Authentication required."}, status=401)
 
     cutoff = timezone.now() - timezone.timedelta(minutes=5)
-    profiles = (
-        Profile.objects.select_related("user")
-        .filter(last_seen__gte=cutoff)
-        .order_by("user__username")
+    profiles = {
+        profile.user_id: profile
+        for profile in Profile.objects.select_related("user").all()
+    }
+
+    data = []
+    online_count = 0
+
+    for user in User.objects.order_by("username"):
+        profile = profiles.get(user.id)
+        last_seen = profile.last_seen if profile else None
+        is_online = bool(last_seen and last_seen >= cutoff)
+        if is_online:
+            online_count += 1
+
+        data.append(
+            {
+                "id": user.id,
+                "username": user.username,
+                "bio": profile.bio if profile else "",
+                "topics": profile.topics if profile else "",
+                "focus_areas": profile.focus_areas if profile else "",
+                "last_seen": last_seen.isoformat() if last_seen else None,
+                "status": "online" if is_online else "offline",
+                "is_online": is_online,
+            }
+        )
+
+    return JsonResponse(
+        {"count": len(data), "online_count": online_count, "users": data}
     )
-
-    data = [
-        {
-            "id": profile.user.id,
-            "username": profile.user.username,
-            "bio": profile.bio,
-            "topics": profile.topics,
-            "focus_areas": profile.focus_areas,
-            "last_seen": profile.last_seen.isoformat() if profile.last_seen else None,
-        }
-        for profile in profiles
-    ]
-
-    return JsonResponse({"count": len(data), "users": data})
