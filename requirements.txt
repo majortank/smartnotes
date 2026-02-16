@@ -3,3 +3,4 @@ ipython
 django-compressor
 django-widget-tweaks
 markdown
+bleach
